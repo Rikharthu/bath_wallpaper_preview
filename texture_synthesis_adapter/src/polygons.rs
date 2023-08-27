@@ -6,6 +6,7 @@ pub fn compute_room_layout_polygons(
     room_type: u8,
     lines: Vec<Line>,
 ) {
+    todo!()
 }
 
 /// Convert line coordinates between image and geo space, and vice versa.
@@ -27,24 +28,24 @@ fn convert_line_coords_image_geo(line: Line, height: i32) -> Line {
     (p1, p2)
 }
 
+#[derive(Clone, Copy, Debug)]
 struct LineSlopeInterceptForm {
     pub slope: f32,
     pub intercept: f32,
 }
 
 fn compute_line_params(line: Line) -> LineSlopeInterceptForm {
-    let padding: f32 = if line.0 .0 == line.1 .0 { 0.00001 } else { 0. };
-
+    let padding: f64 = if line.0 .0 == line.1 .0 { 0.00001 } else { 0. };
     let line_monomials = polyfit(
-        &[line.0 .0 as f32, line.1 .0 as f32 + padding],
-        &[line.0 .1 as f32, line.1 .1 as f32 + padding],
+        &[line.0 .0 as f64, line.1 .0 as f64 + padding],
+        &[line.0 .1 as f64, line.1 .1 as f64 + padding],
         1,
     )
     .unwrap();
 
     LineSlopeInterceptForm {
-        slope: line_monomials[1],
-        intercept: line_monomials[0],
+        slope: line_monomials[1] as f32,
+        intercept: line_monomials[0] as f32,
     }
 }
 
@@ -99,9 +100,118 @@ impl WallPolygon {
     }
 }
 
+fn compute_wall_polygons_for_room_type_0(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+    let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
+
+    let line_center_left = lines_geo[4];
+    let line_params = compute_line_params(line_center_left);
+
+    let line_left_border_slope = line_params.slope;
+    let corner_point = if line_left_border_slope >= 0. {
+        (0f32, 511f32)
+    } else {
+        (0f32, 0f32)
+    };
+    let line_left_border_intercept =
+        compute_line_intercept_at_point(line_left_border_slope, corner_point);
+
+    // Left top, needs to be extended to intersect with left border line
+    let line_left_top = lines_geo[0];
+    let line_params = compute_line_params(line_left_top);
+    let intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_params.slope,
+        line_params.intercept,
+    );
+    let line_left_top = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_left_top.0,
+    );
+
+    // Left botton, needs to be extended to intersect with left border line
+    let line_left_bottom = lines_geo[1];
+    let line_params = compute_line_params(line_left_bottom);
+    let intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_params.slope,
+        line_params.intercept,
+    );
+    let line_left_bottom = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_left_bottom.0,
+    );
+
+    let line_center_right = lines_geo[6];
+
+    // Right border
+    let line_params = compute_line_params(line_center_right);
+    let line_right_border_slope = line_params.slope;
+    let corner_point = if line_right_border_slope >= 0. {
+        (511f32, 0f32)
+    } else {
+        (511f32, 511f32)
+    };
+    let line_right_border_intercept =
+        compute_line_intercept_at_point(line_right_border_slope, corner_point);
+
+    // Right top
+    let line_right_top = lines_geo[3];
+    let line_params = compute_line_params(line_right_top);
+    let intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_params.slope,
+        line_params.intercept,
+    );
+    let line_right_top = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_right_top.0,
+    );
+
+    let line_right_bottom = lines_geo[2];
+    let line_params = compute_line_params(line_right_bottom);
+    let intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_params.slope,
+        line_params.intercept,
+    );
+    let line_right_bottom = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_right_bottom.0,
+    );
+
+    let line_center_top = lines_geo[7];
+    let line_center_bottom = lines_geo[5];
+
+    let left_wall_polygon = WallPolygon {
+        top_left: line_left_top.0,
+        top_right: line_center_left.0,
+        bottom_right: line_center_left.1,
+        bottom_left: line_left_bottom.0,
+    };
+
+    let center_wall_polygon = WallPolygon {
+        top_left: line_center_left.0,
+        top_right: line_center_right.1,
+        bottom_right: line_center_right.0,
+        bottom_left: line_center_left.1,
+    };
+
+    let right_wall_polygon = WallPolygon {
+        top_left: line_center_right.1,
+        top_right: line_right_top.0,
+        bottom_right: line_right_bottom.0,
+        bottom_left: line_center_right.0,
+    };
+
+    [left_wall_polygon, center_wall_polygon, right_wall_polygon]
+}
+
 fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 2] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
-    println!("lines_geo: {lines_geo:?}");
 
     let line_center = lines_geo[2];
     let line_center_params = compute_line_params(line_center);
@@ -207,7 +317,12 @@ fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -
 
 #[cfg(test)]
 mod tests {
-    use crate::polygons::{compute_line_intercept_at_point, compute_line_params, compute_line_y_at_x, compute_lines_intersection_point, compute_room_layout_polygons, compute_wall_polygons_for_room_type_5, convert_line_coords_image_geo, convert_lines_coords_image_geo, WallPolygon};
+    use crate::polygons::{
+        compute_line_intercept_at_point, compute_line_params, compute_line_y_at_x,
+        compute_lines_intersection_point, compute_room_layout_polygons,
+        compute_wall_polygons_for_room_type_0, compute_wall_polygons_for_room_type_5,
+        convert_line_coords_image_geo, convert_lines_coords_image_geo, WallPolygon,
+    };
     use image::{Rgb, RgbImage};
     use imageproc::definitions::HasBlack;
     use imageproc::drawing;
@@ -215,7 +330,41 @@ mod tests {
     use std::path::PathBuf;
 
     #[test]
-    fn compute_and_draw_polygons() {
+    fn compute_and_draw_polygons_for_room_type_0() {
+        let image_height = 512;
+        let i = 40;
+        let lines = vec![
+            ((116, 100), (72, 0)),
+            ((116, 396), (64, 511)),
+            ((344, 370), (511, 479)),
+            ((342, 133), (496, 0)),
+            ((116, 100), (116, 396)),
+            ((116, 396), (344, 370)),
+            ((344, 370), (342, 133)),
+            ((342, 133), (116, 100)),
+        ];
+
+        let [left_wall_polygon, center_wall_polygon, right_wall_polygon] =
+            compute_wall_polygons_for_room_type_0(&lines, image_height);
+
+        let mut lines = left_wall_polygon.lines().to_vec();
+        lines.extend(center_wall_polygon.lines());
+        lines.extend(right_wall_polygon.lines());
+
+        let images_dir =
+            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+        let image_path = images_dir.join(format!("{i}.png"));
+        let src_image = image::open(image_path).unwrap().into_rgb8();
+
+        let overlay_image = draw_lines_on_padded_image(&src_image, &lines, 200);
+
+        let output_dir = PathBuf::from("./out");
+        let output_image_path = output_dir.join(format!("{i}.png"));
+        overlay_image.save(output_image_path).unwrap();
+    }
+
+    #[test]
+    fn compute_and_draw_polygons_for_room_type_5() {
         let image_height = 512;
         let i = 2;
         let lines = vec![
@@ -226,10 +375,8 @@ mod tests {
             ((306, 343), (511, 410)),
         ];
 
-        let [left_wall_polygon, right_wall_polygon] = compute_wall_polygons_for_room_type_5(
-            &lines,
-            image_height
-        );
+        let [left_wall_polygon, right_wall_polygon] =
+            compute_wall_polygons_for_room_type_5(&lines, image_height);
 
         let mut lines = left_wall_polygon.lines().to_vec();
         lines.extend(right_wall_polygon.lines());
