@@ -1,0 +1,50 @@
+[package]
+name = "texture-synthesis"
+description = "Multiresolution Stochastic Texture Synthesis, a non-parametric example-based algorithm for image generation"
+repository = "https://github.com/EmbarkStudios/texture-synthesis"
+version = "0.8.2"
+authors = [
+    "Embark <opensource@embark-studios.com>",
+    "Anastasia Opara <anastasiaopara@gmail.com>",
+    "Tomasz Stachowiak <h3@h3.gd>",
+]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+documentation = "https://docs.rs/texture-synthesis"
+homepage = "https://github.com/EmbarkStudios/texture-synthesis"
+categories = ["multimedia::images"]
+keywords = ["texture", "synthesis", "procedural"]
+
+# We don't want the example images in the publish crate
+exclude = ["/imgs"]
+
+[badges.maintenance]
+status = "looking-for-maintainer"
+
+[dependencies]
+num_cpus = "1.13"
+# avoid bringing in OS random gen that we don't use
+rand = { version = "0.8", default-features = false }
+rand_pcg = "0.3"
+rstar = "0.7"
+
+# Pinned to this version as there seems to be a change that affects output
+[dependencies.image]
+version = "=0.24.5"
+default-features = false
+features = ["jpeg", "png", "bmp"]
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+crossbeam-utils = "0.8"
+
+[dev-dependencies]
+criterion = "0.3"
+img_hash = { version = "2.1.0", default-features = false }
+
+[lib]
+bench = false
+
+[[bench]]
+name = "all-the-things"
+harness = false

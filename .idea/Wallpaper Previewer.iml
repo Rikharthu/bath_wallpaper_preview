@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/texture_synthesis_adapter/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/texture_synthesis_adapter/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/texture-synthesis/lib/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/texture-synthesis/lib/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/texture-synthesis/lib/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/texture-synthesis/lib/tests" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/texture_synthesis_adapter/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

@@ -1,0 +1,44 @@
+[package]
+name = "texture-synthesis-cli"
+description = "A CLI for texture-synthesis"
+repository = "https://github.com/EmbarkStudios/texture-synthesis"
+version = "0.8.3"
+authors = [
+    "Embark <opensource@embark-studios.com>",
+    "Anastasia Opara <anastasiaopara@gmail.com>",
+    "Tomasz Stachowiak <h3@h3.gd>",
+]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+documentation = "https://docs.rs/texture-synthesis"
+homepage = "https://github.com/EmbarkStudios/texture-synthesis"
+categories = ["multimedia::images"]
+keywords = ["texture", "synthesis", "procedural", "cli"]
+
+[badges.maintenance]
+status = "looking-for-maintainer"
+
+[[bin]]
+name = "texture-synthesis"
+path = "src/main.rs"
+bench = false
+
+[dependencies]
+structopt = "0.3"
+texture-synthesis = { version = "0.8.2", path = "../lib" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# We unfortunately can't use clicolors-control which is used by indicatif
+# because it only ever operates on stdout, even though we only ever print
+# to stderr. This is also why indicatif colors don't work if you pipe
+# the image output :(
+atty = "0.2"
+indicatif = "0.16"
+minifb = { version = "0.19", default-features = false, features = [
+    "x11",
+], optional = true }
+
+[features]
+default = []
+progress = ["minifb"]

@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = [
+    "texture_synthesis_adapter"
+]
+
