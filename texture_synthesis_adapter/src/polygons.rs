@@ -878,15 +878,104 @@ fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, right_wall_polygon]
 }
 
+fn compute_wall_polygon_for_room_type_6(
+    lines: &Vec<Line>,
+    image_width: i32,
+    image_height: i32,
+) -> WallPolygon {
+    let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
+
+    let line_top = lines_geo[0];
+    let line_bottom = lines_geo[1];
+
+    let line_params = compute_line_params(line_top);
+    let line_top_slope = line_params.slope;
+    let line_top_intercept = line_params.intercept;
+
+    let line_params = compute_line_params(line_bottom);
+    let line_bottom_slope = line_params.slope;
+    let line_bottom_intercept = line_params.intercept;
+
+    // FIXME: we assume borders to be vertical lines placed at image corners
+    //   Ideally, we would also compute mean angle to rotate them correspondingly,
+    //   if top and bottom lines are parallel or have common slope
+    // Left border
+    let line_params = compute_line_params(((-1, 0), (0, image_height - 1)));
+    let line_left_border_slope = line_params.slope;
+    let line_left_border_intercept = line_params.intercept;
+
+    // Right border
+    let line_params = compute_line_params(((image_width, 0), (image_width - 1, image_height - 1)));
+    let line_right_border_slope = line_params.slope;
+    let line_right_border_intercept = line_params.intercept;
+
+    let top_left_intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_top_slope,
+        line_top_intercept,
+    );
+    let top_right_intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_top_slope,
+        line_top_intercept,
+    );
+    let bottom_left_intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_bottom_slope,
+        line_bottom_intercept,
+    );
+    let bottom_right_intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_bottom_slope,
+        line_bottom_intercept,
+    );
+
+    let line_top = (
+        (
+            top_left_intersection_point.0 as i32,
+            top_left_intersection_point.1 as i32,
+        ),
+        (
+            top_right_intersection_point.0 as i32,
+            top_right_intersection_point.1 as i32,
+        ),
+    );
+    let line_top = convert_line_coords_image_geo(line_top, image_height);
+
+    let line_bottom = (
+        (
+            bottom_left_intersection_point.0 as i32,
+            bottom_left_intersection_point.1 as i32,
+        ),
+        (
+            bottom_right_intersection_point.0 as i32,
+            bottom_right_intersection_point.1 as i32,
+        ),
+    );
+    let line_bottom = convert_line_coords_image_geo(line_bottom, image_height);
+
+    WallPolygon {
+        top_left: line_top.0,
+        top_right: line_top.1,
+        bottom_right: line_bottom.1,
+        bottom_left: line_bottom.0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::polygons::{
         compute_line_intercept_at_point, compute_line_params, compute_line_y_at_x,
         compute_lines_intersection_point, compute_room_layout_polygons,
-        compute_wall_polygons_for_room_type_0, compute_wall_polygons_for_room_type_1,
-        compute_wall_polygons_for_room_type_2, compute_wall_polygons_for_room_type_3,
-        compute_wall_polygons_for_room_type_4, compute_wall_polygons_for_room_type_5,
-        convert_line_coords_image_geo, convert_lines_coords_image_geo, WallPolygon,
+        compute_wall_polygon_for_room_type_6, compute_wall_polygons_for_room_type_0,
+        compute_wall_polygons_for_room_type_1, compute_wall_polygons_for_room_type_2,
+        compute_wall_polygons_for_room_type_3, compute_wall_polygons_for_room_type_4,
+        compute_wall_polygons_for_room_type_5, convert_line_coords_image_geo,
+        convert_lines_coords_image_geo, WallPolygon,
     };
     use image::{Rgb, RgbImage};
     use imageproc::definitions::HasBlack;
@@ -1063,6 +1152,29 @@ mod tests {
 
         let mut lines = left_wall_polygon.lines().to_vec();
         lines.extend(right_wall_polygon.lines());
+
+        let images_dir =
+            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+        let image_path = images_dir.join(format!("{i}.png"));
+        let src_image = image::open(image_path).unwrap().into_rgb8();
+
+        let overlay_image = draw_lines_on_padded_image(&src_image, &lines, 200);
+
+        let output_dir = PathBuf::from("./out");
+        let output_image_path = output_dir.join(format!("{i}.png"));
+        overlay_image.save(output_image_path).unwrap();
+    }
+
+    #[test]
+    fn compute_and_draw_polygons_for_room_type_6() {
+        let image_height = 512;
+        let image_width = 512;
+        let i = 188;
+        let lines = vec![((142, 0), (511, 75)), ((2, 511), (511, 346))];
+
+        let wall_polygon = compute_wall_polygon_for_room_type_6(&lines, image_width, image_height);
+
+        let mut lines = wall_polygon.lines().to_vec();
 
         let images_dir =
             PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
