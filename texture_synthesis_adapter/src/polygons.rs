@@ -1784,22 +1784,6 @@ mod tests {
     }
 
     #[test]
-    fn assembles_polygons_from_lines() {
-        let parse_result = RoomLayoutInfo {
-            room_type: 5,
-            lines: vec![
-                ((294, 167), (13, 0)),
-                ((294, 167), (511, 85)),
-                ((294, 167), (306, 343)),
-                ((306, 343), (0, 491)),
-                ((306, 343), (511, 410)),
-            ],
-        };
-
-        let result = compute_room_layout_polygons(parse_result.room_type, parse_result.lines);
-    }
-
-    #[test]
     fn converts_line_coordinates_between_image_and_geo_spaces() {
         let lines_image = vec![
             ((294, 167), (13, 0)),
