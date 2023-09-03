@@ -966,6 +966,197 @@ fn compute_wall_polygon_for_room_type_6(
     }
 }
 
+fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+    let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
+
+    let line_left = lines_geo[0];
+    let line_right = lines_geo[1];
+
+    // Left border
+    let line_params = compute_line_params(line_left);
+    let line_left_slope = line_params.slope;
+    let line_left_intercept = line_params.intercept;
+
+    let line_left_border_slope = line_left_slope;
+    let corner_point = if line_left_border_slope >= 0. {
+        (0f32, 511f32)
+    } else {
+        (0f32, 0f32)
+    };
+    let line_left_border_intercept =
+        compute_line_intercept_at_point(line_left_border_slope, corner_point);
+
+    let line_left_border = (
+        (
+            -60,
+            compute_line_y_at_x(line_left_border_slope, line_left_border_intercept, -60.0) as i32,
+        ),
+        (
+            20,
+            compute_line_y_at_x(line_left_border_slope, line_left_border_intercept, 20.0) as i32,
+        ),
+    );
+
+    // Left top line
+    // We assume it to be perpendicular to left line with some extra degrees added.
+    // Nothing much we can do other than applying our best assumptions.
+    // TODO: We selected 30 degrees because it gave most realistic results on parsed predictions
+    //   results of LSUN val and train datasets.
+    //   As well as after parsing other room types as type 7 and comparing results to actual lines (where these are visible)
+    //   Bascially, the same technique as other papers used to generate missing room types form existing rooms.
+    let extra_angle_rads = 30f32.to_radians();
+    let line_left_perpendicular_slope = -1.0 / line_left_slope;
+    let line_left_top_slope = (line_left_perpendicular_slope.atan() - extra_angle_rads).tan();
+
+    let corner_point = if line_left_slope >= 0. {
+        (0f32, 511f32)
+    } else {
+        (line_left.1 .0 as f32, line_left.1 .1 as f32)
+    };
+    let line_left_top_intercept =
+        compute_line_intercept_at_point(line_left_top_slope, corner_point);
+
+    // Left bottom line
+    let line_left_bottom_slope = (line_left_perpendicular_slope.atan() + extra_angle_rads).tan();
+    let corner_point = if line_left_bottom_slope >= 0. {
+        (line_left.0 .0 as f32, line_left.0 .1 as f32)
+    } else {
+        (0f32, 0f32)
+    };
+    let line_left_bottom_intercept =
+        compute_line_intercept_at_point(line_left_bottom_slope, corner_point);
+
+    let line_left_top = (
+        (
+            -60,
+            compute_line_y_at_x(line_left_top_slope, line_left_top_intercept, -60.0) as i32,
+        ),
+        (
+            100,
+            compute_line_y_at_x(line_left_top_slope, line_left_top_intercept, 100.0) as i32,
+        ),
+    );
+    let line_left_bottom = (
+        (
+            -60,
+            compute_line_y_at_x(line_left_bottom_slope, line_left_bottom_intercept, -60.0) as i32,
+        ),
+        (
+            100,
+            compute_line_y_at_x(line_left_bottom_slope, line_left_bottom_intercept, 100.0) as i32,
+        ),
+    );
+
+    // Right border
+    let line_params = compute_line_params(line_right);
+    let line_right_slope = line_params.slope;
+    let line_right_intercept = line_params.intercept;
+
+    let line_right_border_slope = line_right_slope;
+    let corner_point = if line_right_border_slope >= 0. {
+        (511f32, 0f32)
+    } else {
+        (511f32, 511f32)
+    };
+    let line_right_border_intercept =
+        compute_line_intercept_at_point(line_right_border_slope, corner_point);
+
+    // Right top line
+    let line_right_perpendicular_slope = -1.0 / line_right_slope;
+    let line_right_top_slope = (line_right_perpendicular_slope.atan() + extra_angle_rads).tan();
+    let corner_point = if line_right_top_slope >= 0. {
+        (line_right.1 .0 as f32, line_right.1 .1 as f32)
+    } else {
+        (511f32, 511f32)
+    };
+    let line_right_top_intercept =
+        compute_line_intercept_at_point(line_right_top_slope, corner_point);
+
+    // Right bottom line
+    let line_right_bottom_slope = (line_right_perpendicular_slope.atan() - extra_angle_rads).tan();
+    let corner_point = if line_right_top_slope >= 0. {
+        (line_right.0 .0 as f32, line_right.0 .1 as f32)
+    } else {
+        (511f32, 0f32)
+    };
+    let line_right_bottom_intercept =
+        compute_line_intercept_at_point(line_right_bottom_slope, corner_point);
+
+    // Left polygon
+    let intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_left_top_slope,
+        line_left_top_intercept,
+    );
+    let line_left_top = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_left.1,
+    );
+    let line_left_top = convert_line_coords_image_geo(line_left_top, image_height);
+
+    let intersection_point = compute_lines_intersection_point(
+        line_left_border_slope,
+        line_left_border_intercept,
+        line_left_bottom_slope,
+        line_left_bottom_intercept,
+    );
+    let line_left_bottom = (
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+        line_left.0,
+    );
+    let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
+
+    let left_wall_polygon = WallPolygon {
+        top_left: line_left_top.0,
+        top_right: line_left_top.1,
+        bottom_right: line_left_bottom.1,
+        bottom_left: line_left_bottom.0,
+    };
+
+    // Right wall polygon
+    let intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_right_top_slope,
+        line_right_top_intercept,
+    );
+    let line_right_top = (
+        line_right.1,
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+    );
+    let line_right_top = convert_line_coords_image_geo(line_right_top, image_height);
+
+    let intersection_point = compute_lines_intersection_point(
+        line_right_border_slope,
+        line_right_border_intercept,
+        line_right_bottom_slope,
+        line_right_bottom_intercept,
+    );
+    let line_right_bottom = (
+        line_right.0,
+        (intersection_point.0 as i32, intersection_point.1 as i32),
+    );
+    let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
+
+    let right_wall_polygon = WallPolygon {
+        top_left: line_right_top.0,
+        top_right: line_right_top.1,
+        bottom_right: line_right_bottom.1,
+        bottom_left: line_right_bottom.0,
+    };
+
+    // Center wall polygon
+    let center_wall_polygon = WallPolygon {
+        top_left: left_wall_polygon.top_right,
+        top_right: right_wall_polygon.top_left,
+        bottom_right: right_wall_polygon.bottom_left,
+        bottom_left: left_wall_polygon.bottom_right,
+    };
+
+    [left_wall_polygon, center_wall_polygon, right_wall_polygon]
+}
+
 #[cfg(test)]
 mod tests {
     use crate::polygons::{
@@ -974,8 +1165,8 @@ mod tests {
         compute_wall_polygon_for_room_type_6, compute_wall_polygons_for_room_type_0,
         compute_wall_polygons_for_room_type_1, compute_wall_polygons_for_room_type_2,
         compute_wall_polygons_for_room_type_3, compute_wall_polygons_for_room_type_4,
-        compute_wall_polygons_for_room_type_5, convert_line_coords_image_geo,
-        convert_lines_coords_image_geo, WallPolygon,
+        compute_wall_polygons_for_room_type_5, compute_wall_polygons_for_room_type_7,
+        convert_line_coords_image_geo, convert_lines_coords_image_geo, WallPolygon,
     };
     use image::{Rgb, RgbImage};
     use imageproc::definitions::HasBlack;
@@ -1174,7 +1365,33 @@ mod tests {
 
         let wall_polygon = compute_wall_polygon_for_room_type_6(&lines, image_width, image_height);
 
-        let mut lines = wall_polygon.lines().to_vec();
+        let lines = wall_polygon.lines().to_vec();
+
+        let images_dir =
+            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+        let image_path = images_dir.join(format!("{i}.png"));
+        let src_image = image::open(image_path).unwrap().into_rgb8();
+
+        let overlay_image = draw_lines_on_padded_image(&src_image, &lines, 200);
+
+        let output_dir = PathBuf::from("./out");
+        let output_image_path = output_dir.join(format!("{i}.png"));
+        overlay_image.save(output_image_path).unwrap();
+    }
+
+    #[test]
+    fn compute_and_draw_polygons_for_room_type_7() {
+        let image_height = 512;
+        let image_width = 512;
+        let i = 206;
+        let lines = vec![((51, 510), (0, 0)), ((417, 510), (419, 1))];
+
+        let [left_wall_polygon, center_wall_polygon, right_wall_polygon] =
+            compute_wall_polygons_for_room_type_7(&lines, image_height);
+
+        let mut lines = left_wall_polygon.lines().to_vec();
+        lines.extend(center_wall_polygon.lines());
+        lines.extend(right_wall_polygon.lines());
 
         let images_dir =
             PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
