@@ -9,8 +9,6 @@ import SwiftUI
 
 struct PreviewButton: View {
     
-    let onTapAction: () -> Void
-    
     var body: some View {
         ZStack(alignment: .center) {
             Circle()
@@ -24,17 +22,12 @@ struct PreviewButton: View {
                 .foregroundColor(.white)
                 .font(.system(size: 28))
         }
-        .onTapGesture {
-            onTapAction()
-        }
     }
 }
 
 struct PhotoButton_Previews: PreviewProvider {
     static var previews: some View {
-        PreviewButton(
-            onTapAction: {}
-        )
+        PreviewButton()
             .previewLayout(.sizeThatFits)
     }
 }

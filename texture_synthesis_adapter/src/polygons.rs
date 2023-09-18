@@ -1,14 +1,6 @@
 use lsun_res_parser::{Line, Point};
 use polyfit_rs::polyfit_rs::polyfit;
 
-pub fn compute_room_layout_polygons(
-    // TODO: use Enum
-    room_type: u8,
-    lines: Vec<Line>,
-) {
-    todo!()
-}
-
 /// Convert line coordinates between image and geo space, and vice versa.
 fn convert_lines_coords_image_geo(lines: &Vec<Line>, height: i32) -> Vec<Line> {
     lines
@@ -88,14 +80,14 @@ fn compute_lines_intersection_point(
 }
 
 #[derive(Clone, Debug)]
-pub struct WallPolygon {
+pub struct Polygon {
     pub top_left: Point,
     pub top_right: Point,
     pub bottom_right: Point,
     pub bottom_left: Point,
 }
 
-impl WallPolygon {
+impl Polygon {
     pub fn lines(&self) -> [Line; 4] {
         [
             (self.top_left, self.top_right),
@@ -106,7 +98,37 @@ impl WallPolygon {
     }
 }
 
-fn compute_wall_polygons_for_room_type_0(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+pub fn compute_wall_polygons(
+    lines: &Vec<Line>,
+    image_width: i32,
+    image_height: i32,
+    room_type: u8,
+) -> Vec<Polygon> {
+    match room_type {
+        0 => compute_wall_polygons_for_room_type_0(lines, image_height).to_vec(),
+        1 => compute_wall_polygons_for_room_type_1(lines, image_height).to_vec(),
+        2 => compute_wall_polygons_for_room_type_2(lines, image_height).to_vec(),
+        3 => compute_wall_polygons_for_room_type_3(lines, image_height).to_vec(),
+        4 => compute_wall_polygons_for_room_type_4(lines, image_height).to_vec(),
+        5 => compute_wall_polygons_for_room_type_5(lines, image_height).to_vec(),
+        6 => vec![compute_wall_polygon_for_room_type_6(
+            lines,
+            image_width,
+            image_height,
+        )],
+        7 => compute_wall_polygons_for_room_type_7(lines, image_height).to_vec(),
+        8 => vec![compute_wall_polygon_for_room_type_8(lines, image_height)],
+        9 => vec![compute_wall_polygon_for_room_type_9(lines, image_height)],
+        10 => compute_wall_polygons_for_room_type_10(lines, image_height).to_vec(),
+
+        _ => {
+            // TODO: better return Result with error
+            panic!("Unknown room type: {room_type}")
+        }
+    }
+}
+
+fn compute_wall_polygons_for_room_type_0(lines: &Vec<Line>, image_height: i32) -> [Polygon; 3] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_center_left = lines_geo[4];
@@ -189,21 +211,21 @@ fn compute_wall_polygons_for_room_type_0(lines: &Vec<Line>, image_height: i32) -
         line_right_bottom.0,
     );
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_center_left.0,
         bottom_right: line_center_left.1,
         bottom_left: line_left_bottom.0,
     };
 
-    let center_wall_polygon = WallPolygon {
+    let center_wall_polygon = Polygon {
         top_left: line_center_left.0,
         top_right: line_center_right.1,
         bottom_right: line_center_right.0,
         bottom_left: line_center_left.1,
     };
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_center_right.1,
         top_right: line_right_top.0,
         bottom_right: line_right_bottom.0,
@@ -213,7 +235,7 @@ fn compute_wall_polygons_for_room_type_0(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, center_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -> [Polygon; 3] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     // Top left
@@ -305,7 +327,7 @@ fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -
     );
     let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_left_top.1,
         bottom_right: line_left_bottom.1,
@@ -337,7 +359,7 @@ fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -
     );
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_right_top.0,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -348,7 +370,7 @@ fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -
     let line_center_left = convert_line_coords_image_geo(line_center_left, image_height);
     let line_center_right = convert_line_coords_image_geo(line_center_right, image_height);
 
-    let center_wall_polygon = WallPolygon {
+    let center_wall_polygon = Polygon {
         top_left: line_center_left.1,
         top_right: line_center_right.1,
         bottom_right: line_center_right.0,
@@ -358,7 +380,7 @@ fn compute_wall_polygons_for_room_type_1(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, center_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -> [Polygon; 3] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_left_top = lines_geo[0];
@@ -454,7 +476,7 @@ fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -
     );
     let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_left_top.1,
         bottom_right: line_left_bottom.1,
@@ -486,7 +508,7 @@ fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -
     );
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_right_top.0,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -497,7 +519,7 @@ fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -
     let line_center_left = convert_line_coords_image_geo(line_center_left, image_height);
     let line_center_right = convert_line_coords_image_geo(line_center_right, image_height);
 
-    let center_wall_polygon = WallPolygon {
+    let center_wall_polygon = Polygon {
         top_left: line_center_left.0,
         top_right: line_center_right.0,
         bottom_right: line_center_right.1,
@@ -507,7 +529,7 @@ fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, center_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygons_for_room_type_3(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 2] {
+fn compute_wall_polygons_for_room_type_3(lines: &Vec<Line>, image_height: i32) -> [Polygon; 2] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_left_top = lines_geo[0];
@@ -621,14 +643,14 @@ fn compute_wall_polygons_for_room_type_3(lines: &Vec<Line>, image_height: i32) -
     let line_right_top = convert_line_coords_image_geo(line_right_top, image_height);
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_left_top.1,
         bottom_right: line_left_bottom.1,
         bottom_left: line_left_bottom.0,
     };
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_right_top.0,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -638,7 +660,7 @@ fn compute_wall_polygons_for_room_type_3(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygons_for_room_type_4(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 2] {
+fn compute_wall_polygons_for_room_type_4(lines: &Vec<Line>, image_height: i32) -> [Polygon; 2] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     // 0 - bottom left
@@ -729,7 +751,7 @@ fn compute_wall_polygons_for_room_type_4(lines: &Vec<Line>, image_height: i32) -
     let line_center = convert_line_coords_image_geo(line_center, image_height);
     let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_center.1,
         bottom_right: line_center.0,
@@ -763,7 +785,7 @@ fn compute_wall_polygons_for_room_type_4(lines: &Vec<Line>, image_height: i32) -
     let line_right_top = convert_line_coords_image_geo(line_right_top, image_height);
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_center.1,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -773,7 +795,7 @@ fn compute_wall_polygons_for_room_type_4(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 2] {
+fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -> [Polygon; 2] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_center = lines_geo[2];
@@ -862,13 +884,13 @@ fn compute_wall_polygons_for_room_type_5(lines: &Vec<Line>, image_height: i32) -
     let line_right_top = convert_line_coords_image_geo(line_right_top, image_height);
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_center.0,
         bottom_right: line_center.1,
         bottom_left: line_left_bottom.0,
     };
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_center.0,
         top_right: line_right_top.0,
         bottom_right: line_right_bottom.0,
@@ -882,7 +904,7 @@ fn compute_wall_polygon_for_room_type_6(
     lines: &Vec<Line>,
     image_width: i32,
     image_height: i32,
-) -> WallPolygon {
+) -> Polygon {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_top = lines_geo[0];
@@ -958,7 +980,7 @@ fn compute_wall_polygon_for_room_type_6(
     );
     let line_bottom = convert_line_coords_image_geo(line_bottom, image_height);
 
-    WallPolygon {
+    Polygon {
         top_left: line_top.0,
         top_right: line_top.1,
         bottom_right: line_bottom.1,
@@ -966,7 +988,7 @@ fn compute_wall_polygon_for_room_type_6(
     }
 }
 
-fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -> [WallPolygon; 3] {
+fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -> [Polygon; 3] {
     let lines_geo = convert_lines_coords_image_geo(&lines, image_height);
 
     let line_left = lines_geo[0];
@@ -1078,7 +1100,7 @@ fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -
     );
     let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_left_top.1,
         bottom_right: line_left_bottom.1,
@@ -1110,7 +1132,7 @@ fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -
     );
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_right_top.0,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -1118,7 +1140,7 @@ fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -
     };
 
     // Center wall polygon
-    let center_wall_polygon = WallPolygon {
+    let center_wall_polygon = Polygon {
         top_left: left_wall_polygon.top_right,
         top_right: right_wall_polygon.top_left,
         bottom_right: right_wall_polygon.bottom_left,
@@ -1128,7 +1150,7 @@ fn compute_wall_polygons_for_room_type_7(lines: &Vec<Line>, image_height: i32) -
     [left_wall_polygon, center_wall_polygon, right_wall_polygon]
 }
 
-fn compute_wall_polygon_for_room_type_8(lines: &Vec<Line>, image_height: i32) -> WallPolygon {
+fn compute_wall_polygon_for_room_type_8(lines: &Vec<Line>, image_height: i32) -> Polygon {
     let line_top = convert_line_coords_image_geo(lines[0], image_height);
     let line_params = compute_line_params(line_top);
     let line_top_slope = line_params.slope;
@@ -1201,7 +1223,7 @@ fn compute_wall_polygon_for_room_type_8(lines: &Vec<Line>, image_height: i32) ->
     );
     let line_bottom = convert_line_coords_image_geo(line_bottom, image_height);
 
-    WallPolygon {
+    Polygon {
         top_left: line_top.0,
         top_right: line_top.1,
         bottom_right: line_bottom.1,
@@ -1209,7 +1231,7 @@ fn compute_wall_polygon_for_room_type_8(lines: &Vec<Line>, image_height: i32) ->
     }
 }
 
-fn compute_wall_polygon_for_room_type_9(lines: &Vec<Line>, image_height: i32) -> WallPolygon {
+fn compute_wall_polygon_for_room_type_9(lines: &Vec<Line>, image_height: i32) -> Polygon {
     let line_bottom = convert_line_coords_image_geo(lines[0], image_height);
     let line_params = compute_line_params(line_bottom);
     let line_bottom_slope = line_params.slope;
@@ -1282,7 +1304,7 @@ fn compute_wall_polygon_for_room_type_9(lines: &Vec<Line>, image_height: i32) ->
     );
     let line_bottom = convert_line_coords_image_geo(line_bottom, image_height);
 
-    WallPolygon {
+    Polygon {
         top_left: line_top.0,
         top_right: line_top.1,
         bottom_right: line_bottom.1,
@@ -1290,10 +1312,7 @@ fn compute_wall_polygon_for_room_type_9(lines: &Vec<Line>, image_height: i32) ->
     }
 }
 
-fn compute_wall_polygons_for_room_type_10(
-    lines: &Vec<Line>,
-    image_height: i32,
-) -> [WallPolygon; 2] {
+fn compute_wall_polygons_for_room_type_10(lines: &Vec<Line>, image_height: i32) -> [Polygon; 2] {
     let line_center = convert_line_coords_image_geo(lines[0], image_height);
 
     let line_params = compute_line_params(line_center);
@@ -1389,7 +1408,7 @@ fn compute_wall_polygons_for_room_type_10(
     );
     let line_left_bottom = convert_line_coords_image_geo(line_left_bottom, image_height);
 
-    let left_wall_polygon = WallPolygon {
+    let left_wall_polygon = Polygon {
         top_left: line_left_top.0,
         top_right: line_left_top.1,
         bottom_right: line_left_bottom.1,
@@ -1421,7 +1440,7 @@ fn compute_wall_polygons_for_room_type_10(
     );
     let line_right_bottom = convert_line_coords_image_geo(line_right_bottom, image_height);
 
-    let right_wall_polygon = WallPolygon {
+    let right_wall_polygon = Polygon {
         top_left: line_right_top.0,
         top_right: line_right_top.1,
         bottom_right: line_right_bottom.1,
@@ -1442,7 +1461,7 @@ mod tests {
         compute_wall_polygons_for_room_type_2, compute_wall_polygons_for_room_type_3,
         compute_wall_polygons_for_room_type_4, compute_wall_polygons_for_room_type_5,
         compute_wall_polygons_for_room_type_7, convert_line_coords_image_geo,
-        convert_lines_coords_image_geo, WallPolygon,
+        convert_lines_coords_image_geo, Polygon,
     };
     use image::{Rgb, RgbImage};
     use imageproc::definitions::HasBlack;

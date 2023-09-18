@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct GalleryScreen: View {
+    
+    @State
+    private var zoomedImagePath: String? = nil
+    
     @State
     private var selectedGalleryType: GalleryType = .rooms
+    
+    private var pinchSheetVisibleBinding: Binding<Bool> {
+        Binding {
+            zoomedImagePath != nil
+        } set: { _, _ in
+            zoomedImagePath = nil
+        }
+    }
+    
     private var headerTopTitle: String {
         switch selectedGalleryType {
         case .rooms:
@@ -33,18 +46,46 @@ struct GalleryScreen: View {
                 selection: $selectedGalleryType,
                 content: {
                     GalleryGridView(
-                        viewModel: GalleryGridViewModel(
+                        allowsAdding: true,
+                        onItemSelected: { mediaFile in
+                            zoomedImagePath = mediaFile.filePath
+                        },
+                        viewModel: GalleryGridView.ViewModel(
                             fileHelper: FileHelper.shared,
                             galleryType: .rooms
                         )
                     ).tag(GalleryType.rooms)
-
-                    Text("B Tab Content").tag(GalleryType.wallpapers)
-                    Text("C Tab Content").tag(GalleryType.previews)
+                    
+                    GalleryGridView(
+                        allowsAdding: true,
+                        onItemSelected: { mediaFile in
+                            zoomedImagePath = mediaFile.filePath
+                        },
+                        viewModel: GalleryGridView.ViewModel(
+                            fileHelper: FileHelper.shared,
+                            galleryType: .wallpapers
+                        )
+                    ).tag(GalleryType.wallpapers)
+                    
+                    GalleryGridView(
+                        allowsAdding: false,
+                        onItemSelected: { mediaFile in
+                            zoomedImagePath = mediaFile.filePath
+                        },
+                        viewModel: GalleryGridView.ViewModel(
+                            fileHelper: FileHelper.shared,
+                            galleryType: .previews
+                        )
+                    ).tag(GalleryType.previews)
                 }
             )
             .animation(.easeOut(duration: 0.2), value: selectedGalleryType)
             .tabViewStyle(.page(indexDisplayMode: .never))
+        }
+        // MARK: Pinch & zoom sheet
+
+        .sheet(isPresented: pinchSheetVisibleBinding) {
+            PinchPhotoSheetView(photoFilePath: self.zoomedImagePath!)
         }
     }
 }

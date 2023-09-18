@@ -17,19 +17,31 @@ struct ContentView: View {
 
     var body: some View {
         
-        VStack(spacing: 0) {
-            TabView(selection: $selectedTab) {
-                Color(.red)
-                    .overlay(Text("Home"))
-                    .tag(TabType.home)
-                GalleryScreen()
-                    .tag(TabType.gallery)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+        NavigationStack {
             
-            BottomTabBarView(
-                selectedTab: $selectedTab
-            )
+            VStack(spacing: 0) {
+                TabView(selection: $selectedTab) {
+                    Color(.red)
+                        .overlay(Text("Home"))
+                        .tag(TabType.home)
+                    GalleryScreen()
+                        .tag(TabType.gallery)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                
+                BottomTabBarView(
+                    onPreviewButtonTapped: {
+                    },
+                    selectedTab: $selectedTab
+                )
+            }
+            
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .previewGeneration:
+                    PreviewGenerationScreen()
+                }
+            }
         }
         
 //        VStack {

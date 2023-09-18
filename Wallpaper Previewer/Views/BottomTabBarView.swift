@@ -8,8 +8,22 @@
 import SwiftUI
 
 struct BottomTabBarView: View {
+    
+    let onPreviewButtonTapped: () -> Void
+    
     @Binding
     var selectedTab: TabType
+    
+    var previewButton: some View {
+        Circle().fill(Color(.secondarySystemBackground))
+            .frame(width: 68, height: 68)
+            .overlay {
+                NavigationLink(value: Route.previewGeneration) {
+                    PreviewButton()
+                }
+            }
+            .offset(CGSize(width: 0, height: -16))
+    }
     
     var body: some View {
         Color(.secondarySystemBackground)
@@ -28,12 +42,7 @@ struct BottomTabBarView: View {
                     )
                     Spacer()
 
-                    Circle().fill(Color(.secondarySystemBackground))
-                        .frame(width: 68, height: 68)
-                        .overlay {
-                            PreviewButton {}
-                        }
-                        .offset(CGSize(width: 0, height: -16))
+                    previewButton
 
                     Spacer()
 
@@ -56,6 +65,9 @@ struct BottomTabBarView_Previews: PreviewProvider {
         VStack {
             Spacer()
             BottomTabBarView(
+                onPreviewButtonTapped: {
+                    print("Preview")
+                },
                 selectedTab: Binding.constant(.home)
             )
         }

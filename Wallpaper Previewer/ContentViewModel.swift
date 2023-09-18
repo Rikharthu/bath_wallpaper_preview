@@ -133,7 +133,7 @@ class ContentViewModel: ObservableObject {
             corners_flip: cornersFlipArrayInfo,
             type_: typeArrayInfo
         )
-        process_room_layout_estimation_results(&roomLayoutEstimationResults)
+//        process_room_layout_estimation_results(&roomLayoutEstimationResults)
         
         
 //        let array = try! MLMultiArray(shape: [3, 4], dataType: .float32)

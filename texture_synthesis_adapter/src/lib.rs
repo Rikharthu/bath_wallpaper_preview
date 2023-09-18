@@ -1,14 +1,17 @@
 mod polygons;
 
-use image::{DynamicImage, GenericImageView, Rgba, RgbaImage};
+use image::{DynamicImage, GenericImageView, Pixel, Rgba, RgbaImage};
+use imageproc::drawing;
 use lsun_res_parser::parse_lsun_results;
 use ndarray::{Array2, Array3, Axis, ShapeBuilder};
 use ndarray_stats::QuantileExt;
 use std::os::raw::c_int;
-use std::{mem, ptr, slice};
+use std::{default, mem, ptr, slice};
 use texture_synthesis as ts;
 use texture_synthesis::session::{GeneratorProgress, ProgressUpdate};
 use texture_synthesis::Dims;
+
+use crate::polygons::compute_wall_polygons;
 
 #[repr(C)]
 pub struct RgbaImageInfo {
@@ -31,6 +34,43 @@ pub struct MLMultiArray2DInfo {
     pub data: *const f32,
     pub shape: [usize; 2],
     pub strides: [usize; 2],
+}
+
+#[repr(C)]
+pub struct RoomLayout {
+    /// Identified room layout lines
+    pub lines: [Line; 8],
+    /// Indicates how many actual lines are stored in [lines] (at most 8)
+    pub num_lines: u8,
+    /// LSUN room type
+    pub room_type: u8,
+    /// Reconstructed wall polygons based on room type
+    pub wall_polygons: [WallPolygon; 3],
+    /// Indicates how many actual wall polygons are stored in [polygons] (at most 3)
+    pub num_wall_polygons: u8,
+}
+
+#[repr(C)]
+#[derive(Default)]
+pub struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+#[repr(C)]
+#[derive(Default)]
+pub struct Line {
+    pub start: Point,
+    pub end: Point,
+}
+
+#[repr(C)]
+#[derive(Default)]
+pub struct WallPolygon {
+    pub top_left: Point,
+    pub top_right: Point,
+    pub bottom_right: Point,
+    pub bottom_left: Point,
 }
 
 impl MLMultiArray2DInfo {
@@ -203,7 +243,8 @@ pub extern "C" fn shipping_rust_addition(a: c_int, b: c_int) -> c_int {
 #[no_mangle]
 pub extern "C" fn process_room_layout_estimation_results(
     results: *const RoomLayoutEstimationResults,
-) {
+    image_info: *const RgbaImageInfo,
+) -> *const u8 {
     let results_ref = unsafe { &*results };
 
     let type_array = results_ref.type_.array();
@@ -222,10 +263,92 @@ pub extern "C" fn process_room_layout_estimation_results(
     println!("Flipped array shape: {:?}", corners_flip_array.shape());
 
     let parse_result =
-        parse_lsun_results(edges_array, corners_array, corners_flip_array, type_array);
+        parse_lsun_results(edges_array, corners_array, corners_flip_array, type_array).unwrap();
     println!("Parse result: {parse_result:?}");
 
     // TODO: extract polygons from parse_result
+
+    let polygons = compute_wall_polygons(
+        &parse_result.lines,
+        // TODO: provide from function args
+        512,
+        // TODO: provide from function args
+        512,
+        parse_result.room_type,
+    );
+
+    let mut wall_polygons: [WallPolygon; 3] = Default::default();
+    for (idx, polygon) in polygons.iter().enumerate() {
+        // TODO: could use `From` impl
+        let top_left = Point {
+            x: polygon.top_left.0,
+            y: polygon.top_left.1,
+        };
+        let top_right = Point {
+            x: polygon.top_right.0,
+            y: polygon.top_right.1,
+        };
+        let bottom_right = Point {
+            x: polygon.bottom_right.0,
+            y: polygon.bottom_right.1,
+        };
+        let bottom_left = Point {
+            x: polygon.bottom_left.0,
+            y: polygon.bottom_left.1,
+        };
+        wall_polygons[idx] = WallPolygon {
+            top_left,
+            top_right,
+            bottom_right,
+            bottom_left,
+        };
+    }
+    let num_wall_polygons = polygons.len() as u8;
+
+    let mut lines: [Line; 8] = Default::default();
+    for (idx, (start, end)) in parse_result.lines.iter().enumerate() {
+        let line = Line {
+            start: Point {
+                x: start.0,
+                y: start.1,
+            },
+            end: Point { x: end.0, y: end.1 },
+        };
+        lines[idx] = line;
+    }
+    let num_lines = parse_result.lines.len() as u8;
+
+    let room_layout = RoomLayout {
+        lines,
+        num_lines,
+        room_type: parse_result.room_type,
+        wall_polygons,
+        num_wall_polygons,
+    };
+    // TODO: return this
+
+    // FIXME: visualization for debug
+    let image_info = unsafe { ptr::read(image_info) };
+
+    let data_slice = unsafe { slice::from_raw_parts(image_info.data, image_info.count) };
+    let buffer = data_slice.to_vec();
+    let mut image =
+        RgbaImage::from_raw(image_info.width as u32, image_info.height as u32, buffer).unwrap();
+
+    for (p1, p2) in parse_result.lines {
+        drawing::draw_line_segment_mut(
+            &mut image,
+            (p1.0 as f32, p1.1 as f32),
+            (p2.0 as f32, p2.1 as f32),
+            Rgba([255, 2, 2, 255]),
+        )
+    }
+
+    let raw = image.as_raw().clone();
+    let ptr = raw.as_ptr();
+    // TODO: memory leak, need to release later from rust
+    mem::forget(raw);
+    ptr
 }
 
 #[cfg(test)]

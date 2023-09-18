@@ -44,4 +44,5 @@ void process_segmentation_map(const struct SegmentationMap *segmentation_map);
 
 int shipping_rust_addition(int a, int b);
 
-void process_room_layout_estimation_results(const struct RoomLayoutEstimationResults *results);
+const uint8_t *process_room_layout_estimation_results(const struct RoomLayoutEstimationResults *results,
+                                                      const struct RgbaImageInfo *image_info);

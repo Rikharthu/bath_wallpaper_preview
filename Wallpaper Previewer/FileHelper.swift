@@ -9,9 +9,19 @@ import SwiftUI
 
 // TODO: make methods async on IO scheduler
 class FileHelper {
-    private let synthesisResultsDirectory: URL
-    private let photosDirectory: URL
+    /// Directory storing raw room photos
+    private let roomPhotosDirectory: URL
+    /// Directory storing room wall mask images
+    private let roomMasksDirectory: URL
+    /// Directory storing room layout JSON files
+    private let roomLayoutsDirectory: URL
+    /// Directory storing raw wallpaper photos
+    private let wallpapersDirectory: URL
+    /// Directory storing tileable wallpaper images
     private let wallpaperTilesDirectory: URL
+    /// Directory storing preview images
+    private let previewsDirectory: URL
+    
     // TODO: add directories to save mask image and layout JSON as well
     private let fileManager = FileManager.default
     
@@ -27,22 +37,19 @@ class FileHelper {
             create: false
         )
         
-        synthesisResultsDirectory = documentsDirectory.appendingPathComponent("Synthesis Results", isDirectory: true)
-        photosDirectory = documentsDirectory.appendingPathComponent("Photos", isDirectory: true)
+        previewsDirectory = documentsDirectory.appendingPathComponent("Previews", isDirectory: true)
+        roomPhotosDirectory = documentsDirectory.appendingPathComponent("Room Photos", isDirectory: true)
+        roomMasksDirectory = documentsDirectory.appendingPathComponent("Room Masks", isDirectory: true)
+        roomLayoutsDirectory = documentsDirectory.appendingPathComponent("Room Layouts", isDirectory: true)
+        wallpapersDirectory = documentsDirectory.appendingPathComponent("Wallpapers", isDirectory: true)
         wallpaperTilesDirectory = documentsDirectory.appendingPathComponent("Wallpaper Tiles", isDirectory: true)
         
-        if !fileManager.fileExists(atPath: synthesisResultsDirectory.path) {
-            print("Creating synthesis results directory")
-            try! fileManager.createDirectory(at: synthesisResultsDirectory, withIntermediateDirectories: true)
-        }
-        if !fileManager.fileExists(atPath: photosDirectory.path) {
-            print("Creating photos directory")
-            try! fileManager.createDirectory(at: photosDirectory, withIntermediateDirectories: true)
-        }
-        if !fileManager.fileExists(atPath: wallpaperTilesDirectory.path) {
-            print("Creating wallpaper tiles directory")
-            try! fileManager.createDirectory(at: wallpaperTilesDirectory, withIntermediateDirectories: true)
-        }
+        createDirectoryIfNeeded(previewsDirectory)
+        createDirectoryIfNeeded(roomPhotosDirectory)
+        createDirectoryIfNeeded(roomMasksDirectory)
+        createDirectoryIfNeeded(roomLayoutsDirectory)
+        createDirectoryIfNeeded(wallpapersDirectory)
+        createDirectoryIfNeeded(wallpaperTilesDirectory)
     }
     
     static func create() -> Result<FileHelper, Error> {
@@ -54,16 +61,120 @@ class FileHelper {
         }
     }
     
+    private func createDirectoryIfNeeded(_ directoryUrl: URL) {
+        if !fileManager.fileExists(atPath: directoryUrl.path) {
+            print("Creating directory: \(directoryUrl.path)")
+            try! fileManager.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        }
+    }
+    
     /// Saves room photo and returns it's new identifier
     func saveRoomPhoto(image: UIImage) -> Result<MediaFile, Error> {
-        let id = UUID().uuidString
-        let fileName = photoFileNameForId(id)
+        return saveImageToDirectory(image: image, directoryUrl: roomPhotosDirectory)
+    }
+    
+    func deleteRoomPhoto(id: String) -> Result<Void, Error> {
+        switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: roomPhotosDirectory) {
+        case .success(true):
+            print("Successfully deleted wallpaper photo: \(id)")
+        case .success(false):
+            print("Wallpeper photo with id \(id) does not exist")
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+        
+        // Also delete room mask and layout files if those exist
+        switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: roomMasksDirectory) {
+        case .success(let deleted):
+            print("Deleted room mask \(id): \(deleted)")
+        case .failure(let error):
+            return .failure(error)
+        }
+        
+        switch deleteJsonFileFromDirectoryIfExists(fileId: id, directoryUrl: roomLayoutsDirectory) {
+        case .success(let deleted):
+            print("Deleted room layout \(id): \(deleted)")
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
+    func loadRoomPhoto(id: String) -> Result<UIImage, Error> {
+        let filePath = roomPhotoFileUrlForId(id).path
+        
+        guard let image = UIImage(contentsOfFile: filePath) else {
+            return .failure(FileHelperError.runtimeError("Could not load image from path \(filePath)"))
+        }
+        return .success(image)
+    }
+    
+    func photoFilePathForId(_ id: String) -> String {
+        return roomPhotoFileUrlForId(id).path
+    }
+    
+    func getRoomPhotos() -> Result<[MediaFile], Error> {
+        return getMediaFiles(fromDirectory: roomPhotosDirectory)
+    }
+    
+    func saveWallpaperPhoto(image: UIImage) -> Result<MediaFile, Error> {
+        return saveImageToDirectory(image: image, directoryUrl: wallpapersDirectory)
+    }
+    
+    func deleteWallpaperPhoto(id: String) -> Result<Void, Error> {
+        switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: wallpapersDirectory) {
+        case .success(true):
+            print("Successfully deleted wallpaper photo: \(id)")
+        case .success(false):
+            print("Wallpeper photo with id \(id) does not exist")
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+        
+        // Also delete wallpaper tiles if those exist
+        switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: wallpaperTilesDirectory) {
+        case .success(let deleted):
+            print("Deleted wallpaper tile \(id): \(deleted)")
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
+    func getWallpaperPhotos() -> Result<[MediaFile], Error> {
+        return getMediaFiles(fromDirectory: wallpapersDirectory)
+    }
+    
+    func saveRoomMask(image: UIImage, id: String) -> Result<MediaFile, Error> {
+        return saveImageToDirectory(image: image, id: id, directoryUrl: roomMasksDirectory)
+    }
+    
+    func loadRoomMask(id: String) -> Result<UIImage?, Error> {
+        let filePath = roomMaskFileUrlForId(id).path
+        
+        if !fileManager.fileExists(atPath: filePath) {
+            // TODO: ideally we would handle non-existend mask as specific error enum variant
+            return .success(nil)
+        }
+        
+        guard let image = UIImage(contentsOfFile: filePath) else {
+            return .failure(FileHelperError.runtimeError("Could not load image from path \(filePath)"))
+        }
+        return .success(image)
+    }
+    
+    
+    
+    private func saveImageToDirectory(image: UIImage, id: String, directoryUrl: URL) -> Result<MediaFile, Error> {
+        let fileName = imageFileNameForId(id)
         
         guard let imageData = image.jpegData(compressionQuality: 1.0) else {
             return .failure(FileHelperError.runtimeError("Image does not have JPEG data"))
         }
-
-        let imageFileUrl = photosDirectory.appendingPathComponent(fileName)
+        
+        let imageFileUrl = directoryUrl.appendingPathComponent(fileName)
         do {
             try imageData.write(to: imageFileUrl)
         } catch {
@@ -75,41 +186,52 @@ class FileHelper {
         return .success(mediaFile)
     }
     
-    func deleteRoomPhoto(id: String) -> Result<Void, Error> {
-        let fileName = photoFileNameForId(id)
-        let photoFileUrl = photosDirectory.appendingPathComponent(fileName)
+    private func saveImageToDirectory(image: UIImage, directoryUrl: URL) -> Result<MediaFile, Error> {
+        let id = UUID().uuidString
+        return saveImageToDirectory(image: image, id: id, directoryUrl: directoryUrl)
+    }
+    
+    
+    private func deleteImageFromDirectoryIfExists(imageId: String, directoryUrl: URL) -> Result<Bool, Error> {
+        let fileName = imageFileNameForId(imageId)
+        let imageFileUrl = directoryUrl.appendingPathComponent(fileName)
         
-        do {
-            try fileManager.removeItem(at: photoFileUrl)
-            return .success(())
-        } catch {
-            return .failure(error)
+        if fileManager.fileExists(atPath: imageFileUrl.path) {
+            do {
+                try fileManager.removeItem(at: imageFileUrl)
+                return .success(true)
+            } catch {
+                return .failure(error)
+            }
+        } else {
+            return .success(false)
         }
     }
     
-    func loadRoomPhoto(id: String) -> Result<UIImage, Error> {
-        let filePath = photoFileUrlForId(id).path
+    private func deleteJsonFileFromDirectoryIfExists(fileId: String, directoryUrl: URL) -> Result<Bool, Error> {
+        let fileName = jsonFileNameForId(fileId)
+        let jsonFileUrl = directoryUrl.appendingPathComponent(fileName)
         
-        guard let image = UIImage(contentsOfFile: filePath) else {
-            return .failure(FileHelperError.runtimeError("Could not load image from path \(filePath)"))
+        if fileManager.fileExists(atPath: jsonFileUrl.path) {
+            do {
+                try fileManager.removeItem(at: jsonFileUrl)
+                return .success(true)
+            } catch {
+                return .failure(error)
+            }
+        } else {
+            return .success(false)
         }
-        return .success(image)
     }
     
-    func photoFilePathForId(_ id: String) -> String {
-        return photoFileUrlForId(id).path
-    }
-    
-    func getRoomPhotos() -> Result<[MediaFile], Error> {
+    private func getMediaFiles(fromDirectory directory: URL) -> Result<[MediaFile], Error> {
         do {
-            let photosDirectoryContents = try fileManager.contentsOfDirectory(
-                at: photosDirectory,
+            let directoryContents = try fileManager.contentsOfDirectory(
+                at: directory,
                 includingPropertiesForKeys: nil
             )
             
-            // TODO: sort by creation date
-            
-            let mediaFilesWithCreationDate = try photosDirectoryContents.map { fileUrl in
+            let mediaFilesWithCreationDate = try directoryContents.map { fileUrl in
                 let filePath = fileUrl.path
                 let id = fileUrl.lastPathComponent.replacing(".jpg", with: "")
                 let fileAttributes = try fileManager.attributesOfItem(atPath: filePath)
@@ -117,7 +239,6 @@ class FileHelper {
                 return (MediaFile(id: id, filePath: filePath), creationDate)
             }
             
-            // Return newer files first
             let mediaFiles = mediaFilesWithCreationDate
                 .sorted(by: { $0.1 > $1.1 })
                 .map { $0.0 }
@@ -128,12 +249,36 @@ class FileHelper {
         }
     }
     
-    private func photoFileNameForId(_ id: String) -> String {
-        return "\(id).jpg"
+    private func roomPhotoFileUrlForId(_ id: String) -> URL {
+        roomPhotosDirectory.appendingPathComponent(imageFileNameForId(id))
     }
     
-    private func photoFileUrlForId(_ id: String) -> URL {
-        photosDirectory.appendingPathComponent(photoFileNameForId(id))
+    private func roomMaskFileUrlForId(_ id: String) -> URL {
+        roomMasksDirectory.appendingPathComponent(imageFileNameForId(id))
+    }
+    
+    private func roomLayoutFileUrlForId(_ id: String) -> URL {
+        roomLayoutsDirectory.appendingPathComponent(jsonFileNameForId(id))
+    }
+    
+    private func wallpaperFileUrlForId(_ id: String) -> URL {
+        wallpapersDirectory.appendingPathComponent(imageFileNameForId(id))
+    }
+    
+    private func wallpaperTileFileUrlForId(_ id: String) -> URL {
+        wallpaperTilesDirectory.appendingPathComponent(imageFileNameForId(id))
+    }
+    
+    private func previewFileUrlForId(_ id: String) -> URL {
+        previewsDirectory.appendingPathComponent(imageFileNameForId(id))
+    }
+    
+    private func jsonFileNameForId(_ id: String) -> String {
+        return "\(id).json"
+    }
+    
+    private func imageFileNameForId(_ id: String) -> String {
+        return "\(id).jpg"
     }
 }
 
