@@ -145,32 +145,36 @@ extension PreviewGenerationScreen {
             let cornersArray: MLMultiArray = corners.featureValue.multiArrayValue!
             let cornersFlipArray: MLMultiArray = cornersFlip.featureValue.multiArrayValue!
             let typeArray: MLMultiArray = type.featureValue.multiArrayValue!
-            print("Edges array shape: \(edgesArray.shape), strides: \(edgesArray.strides)")
-            print("Corners array shape: \(cornersArray.shape), strides: \(cornersArray.strides)")
-            print("Flipped corners array shape: \(cornersFlipArray.shape), strides: \(cornersFlipArray.strides)")
-            print("Type array shape: \(typeArray.shape), strides: \(typeArray.strides)")
             
-            // TODO: extract this conversion code to Utils / Extensions
+            // We use our custom extension to compute strides based on shape because the existing `strides` property doesn't always match
+            let edgesArrayStrides = edgesArray.shapeStrides
             let edgesArrayInfo = MLMultiArray3DInfo(
                 data: UnsafeMutablePointer<Float32>(OpaquePointer(edgesArray.dataPointer)),
-                shape: (UInt(edgesArray.shape[0]), UInt(edgesArray.shape[1]), UInt(edgesArray.shape[2])),
-                strides: (UInt(edgesArray.strides[0]), UInt(edgesArray.strides[1]), UInt(edgesArray.strides[2]))
+                shape: (edgesArray.shape[0].uintValue, edgesArray.shape[1].uintValue, edgesArray.shape[2].uintValue),
+                strides: (edgesArrayStrides[0], edgesArrayStrides[1], edgesArrayStrides[2])
             )
+            
+            let cornersArrayStrides = cornersArray.shapeStrides
             let cornersArrayInfo = MLMultiArray3DInfo(
                 data: UnsafeMutablePointer<Float32>(OpaquePointer(cornersArray.dataPointer)),
-                shape: (UInt(cornersArray.shape[0]), UInt(cornersArray.shape[1]), UInt(cornersArray.shape[2])),
-                strides: (UInt(cornersArray.strides[0]), UInt(cornersArray.strides[1]), UInt(cornersArray.strides[2]))
+                shape: (cornersArray.shape[0].uintValue, cornersArray.shape[1].uintValue, cornersArray.shape[2].uintValue),
+                strides: (cornersArrayStrides[0], cornersArrayStrides[1], cornersArrayStrides[2])
             )
+            
+            let cornersFlipArrayStrides = cornersFlipArray.shapeStrides
             let cornersFlipArrayInfo = MLMultiArray3DInfo(
                 data: UnsafeMutablePointer<Float32>(OpaquePointer(cornersFlipArray.dataPointer)),
-                shape: (UInt(cornersFlipArray.shape[0]), UInt(cornersFlipArray.shape[1]), UInt(cornersFlipArray.shape[2])),
-                strides: (UInt(cornersFlipArray.strides[0]), UInt(cornersFlipArray.strides[1]), UInt(cornersFlipArray.strides[2]))
+                shape: (cornersFlipArray.shape[0].uintValue, cornersFlipArray.shape[1].uintValue, cornersFlipArray.shape[2].uintValue),
+                strides: (cornersFlipArrayStrides[0], cornersFlipArrayStrides[1], cornersFlipArrayStrides[2])
             )
+            
+            let typeArrayStrides = typeArray.shapeStrides
             let typeArrayInfo = MLMultiArray2DInfo(
                 data: UnsafeMutablePointer<Float32>(OpaquePointer(typeArray.dataPointer)),
-                shape: (UInt(typeArray.shape[0]), UInt(typeArray.shape[1])),
-                strides: (UInt(typeArray.strides[0]), UInt(typeArray.strides[1]))
+                shape: (typeArray.shape[0].uintValue, typeArray.shape[1].uintValue),
+                strides: (typeArrayStrides[0], typeArrayStrides[1])
             )
+            
             var roomLayoutEstimationResults = RoomLayoutEstimationResults(
                 edges: edgesArrayInfo,
                 corners: cornersArrayInfo,
@@ -178,46 +182,18 @@ extension PreviewGenerationScreen {
                 type_: typeArrayInfo
             )
             
+            let roomLayout = process_room_layout_estimation_results(&roomLayoutEstimationResults).model
             
-            // FIXME: image for debug
-            // Create blank image
-            let bounds = CGRect(origin: .zero, size: CGSize(width: 512, height: 512))
-            let edgesImage = UIGraphicsImageRenderer(bounds: bounds).image { _ in
-              UIColor.black.setFill()
-              UIRectFill(bounds)
+            
+            print("Processed room layout: \(roomLayout)")
+            
+            switch fileHelper.saveRoomLayout(id: roomPhotoFile.id, roomLayout: roomLayout) {
+            case .success(let roomLayoutFile):
+                print("Successfully saved room layout data to: \(roomLayoutFile.filePath)")
+            case .failure(let error):
+                print("Could not save room layout data: \(error)")
+                // TODO: return error
             }
-            let rgbData = edgesImage.pixelValuesRgba()!
-            let processedRgbData = rgbData.withUnsafeBufferPointer { ptr in
-                let image_info = RgbaImageInfo(
-                    data: ptr.baseAddress!,
-                    count: UInt(rgbData.count),
-                    width: UInt(edgesImage.size.width),
-                    height: UInt(edgesImage.size.height)
-                )
-                return withUnsafePointer(to: image_info) { image_info in
-                    process_room_layout_estimation_results(&roomLayoutEstimationResults, image_info)!
-                }
-            }
-            
-            let buffer = UnsafeBufferPointer(start: processedRgbData, count: rgbData.count)
-            var array = Array(buffer)
-            
-            let reconstrucedCGImage = array.withUnsafeMutableBytes { ptr -> CGImage in
-                let context = CGContext(
-                    data: ptr.baseAddress,
-                    width: Int(edgesImage.size.width),
-                    height: Int(edgesImage.size.height),
-                    bitsPerComponent: 8,
-                    bytesPerRow: 4 * Int(edgesImage.size.width),
-                    space: CGColorSpace(name: CGColorSpace.sRGB)!,
-                    bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
-                )!
-                return context.makeImage()!
-            }
-            let reconstructedImage = UIImage(cgImage: reconstrucedCGImage)
-            
-            // FIXME: for debug
-            self.segmentationImage = reconstructedImage
            
             
             // TODO: misclassification could be partially resolved by parsing using similar room types, and presenting user multiple candidates for him to select the best result. We're mostly wrong because of incorrect room type.

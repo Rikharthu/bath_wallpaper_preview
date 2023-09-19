@@ -165,6 +165,19 @@ class FileHelper {
         return .success(image)
     }
     
+    func saveRoomLayout(id: String, roomLayout: RoomLayout) -> Result<MediaFile, Error> {
+        let fileUrl = roomLayoutFileUrlForId(id)
+        
+        do {
+            let encodedRoomLayout = try JSONEncoder().encode(roomLayout)
+            try encodedRoomLayout.write(to: fileUrl)
+        } catch {
+            return .failure(error)
+        }
+        
+        let mediaFile = MediaFile(id: id, filePath: fileUrl.path)
+        return .success(mediaFile)
+    }
     
     
     private func saveImageToDirectory(image: UIImage, id: String, directoryUrl: URL) -> Result<MediaFile, Error> {

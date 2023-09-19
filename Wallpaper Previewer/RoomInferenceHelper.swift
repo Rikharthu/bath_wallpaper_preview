@@ -118,7 +118,7 @@ class RoomInferenceHelper {
         
         let typeOutput = modelDescription.outputDescriptionsByName["type"]!
         let typeOutputConstraint = typeOutput.multiArrayConstraint!
-        print("Room type output: multi-array of shape \(typeOutputConstraint.shape) and type \(typeOutputConstraint.dataType)")
+        print("Room type output: multi-array of shape \(typeOutputConstraint.shape) - \(typeOutputConstraint.shapeConstraint.enumeratedShapes) and type \(typeOutputConstraint.dataType)")
         
         let modelMetadata = modelDescription.metadata
         print("Model metadata: \(modelMetadata)")

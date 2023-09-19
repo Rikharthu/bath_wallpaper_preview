@@ -25,6 +25,13 @@
 		D5088FAA2982A77300088359 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5088FA92982A77300088359 /* Preview Assets.xcassets */; };
 		D5088FB12982A78100088359 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5088FB02982A78100088359 /* ImagePicker.swift */; };
 		D513A1F4298D721300771077 /* UIImage+Conversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513A1F3298D721300771077 /* UIImage+Conversions.swift */; };
+		D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */; };
+		D535115C2ABA1131009B9029 /* RoomLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D535115B2ABA1131009B9029 /* RoomLayout.swift */; };
+		D535115E2ABA1157009B9029 /* RoomType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D535115D2ABA1157009B9029 /* RoomType.swift */; };
+		D53511602ABA11BE009B9029 /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = D535115F2ABA11BE009B9029 /* Line.swift */; };
+		D53511622ABA11F4009B9029 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511612ABA11F4009B9029 /* Point.swift */; };
+		D53511642ABA125C009B9029 /* Polygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511632ABA125C009B9029 /* Polygon.swift */; };
+		D53511662ABA12E7009B9029 /* RoomLayout+Conversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */; };
 		D548879A29ABB016003A543B /* SegmentationVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D548879929ABB016003A543B /* SegmentationVisualizationView.swift */; };
 		D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */; };
 		D54887A729ABD120003A543B /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A629ABD120003A543B /* Math.swift */; };
@@ -99,6 +106,13 @@
 		D5088FA92982A77300088359 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D5088FB02982A78100088359 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		D513A1F3298D721300771077 /* UIImage+Conversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Conversions.swift"; sourceTree = "<group>"; };
+		D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Utils.swift"; sourceTree = "<group>"; };
+		D535115B2ABA1131009B9029 /* RoomLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomLayout.swift; sourceTree = "<group>"; };
+		D535115D2ABA1157009B9029 /* RoomType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomType.swift; sourceTree = "<group>"; };
+		D535115F2ABA11BE009B9029 /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
+		D53511612ABA11F4009B9029 /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
+		D53511632ABA125C009B9029 /* Polygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polygon.swift; sourceTree = "<group>"; };
+		D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomLayout+Conversions.swift"; sourceTree = "<group>"; };
 		D548879929ABB016003A543B /* SegmentationVisualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationVisualizationView.swift; sourceTree = "<group>"; };
 		D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Helpers.swift"; sourceTree = "<group>"; };
 		D54887A629ABD120003A543B /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
@@ -262,9 +276,9 @@
 				D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */,
 				D5088FA42982A77200088359 /* ContentView.swift */,
 				D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */,
+				D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */,
 				D5088FA62982A77300088359 /* Assets.xcassets */,
 				D5088FA82982A77300088359 /* Preview Content */,
-				D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */,
 			);
 			path = "Wallpaper Previewer";
 			sourceTree = "<group>";
@@ -285,6 +299,8 @@
 				D54887A629ABD120003A543B /* Math.swift */,
 				D54D5C6529AE85CD00701A42 /* UIImage+Orientation.swift */,
 				D5BB738529AE8C9300C1C885 /* Orientation.swift */,
+				D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */,
+				D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -299,6 +315,11 @@
 				D50380C32AB21BD3007933A6 /* TabType.swift */,
 				D5897FA82AB33F650099E31E /* MediaFile.swift */,
 				D5897FD92AB865CA0099E31E /* Route.swift */,
+				D535115B2ABA1131009B9029 /* RoomLayout.swift */,
+				D535115D2ABA1157009B9029 /* RoomType.swift */,
+				D535115F2ABA11BE009B9029 /* Line.swift */,
+				D53511612ABA11F4009B9029 /* Point.swift */,
+				D53511632ABA125C009B9029 /* Polygon.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -563,9 +584,12 @@
 				D50453B72A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage in Sources */,
 				D5088FA52982A77200088359 /* ContentView.swift in Sources */,
 				D5897FE12AB86DDE0099E31E /* PickWallpaperPhotoView.swift in Sources */,
+				D53511602ABA11BE009B9029 /* Line.swift in Sources */,
+				D53511642ABA125C009B9029 /* Polygon.swift in Sources */,
 				D50380C42AB21BD3007933A6 /* TabType.swift in Sources */,
 				D5897FB22AB376AC0099E31E /* GalleryGridView+ViewModel.swift in Sources */,
 				D54887A729ABD120003A543B /* Math.swift in Sources */,
+				D53511662ABA12E7009B9029 /* RoomLayout+Conversions.swift in Sources */,
 				D5897FB42AB37F930099E31E /* AddImageGridItemView.swift in Sources */,
 				D55807AE2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift in Sources */,
 				D513A1F4298D721300771077 /* UIImage+Conversions.swift in Sources */,
@@ -578,6 +602,7 @@
 				D5A41CBA29E1D86800693D9C /* Feature.swift in Sources */,
 				D5897FDD2AB869130099E31E /* PickRoomPhotoView.swift in Sources */,
 				D5897FE32AB86E560099E31E /* PreviewGenerationView.swift in Sources */,
+				D535115E2ABA1157009B9029 /* RoomType.swift in Sources */,
 				D5897FB62AB478C60099E31E /* PinchPhotoView.swift in Sources */,
 				D50380BC2AB20DC6007933A6 /* GalleryType.swift in Sources */,
 				D548879A29ABB016003A543B /* SegmentationVisualizationView.swift in Sources */,
@@ -588,9 +613,12 @@
 				D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */,
 				D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */,
 				D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */,
+				D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */,
 				D50380BE2AB211D2007933A6 /* BottomTabBarView.swift in Sources */,
 				D5897FAD2AB3742C0099E31E /* ImageGridItemView.swift in Sources */,
 				D54D5C6629AE85CD00701A42 /* UIImage+Orientation.swift in Sources */,
+				D535115C2ABA1131009B9029 /* RoomLayout.swift in Sources */,
+				D53511622ABA11F4009B9029 /* Point.swift in Sources */,
 				D5897FBC2AB47CDE0099E31E /* PinchPhotoSheetView.swift in Sources */,
 				D5897FDA2AB865CA0099E31E /* Route.swift in Sources */,
 				D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */,

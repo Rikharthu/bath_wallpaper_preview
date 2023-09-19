@@ -30,6 +30,7 @@ pub struct SegmentationMap {
 }
 
 #[repr(C)]
+#[derive(Debug)]
 pub struct MLMultiArray2DInfo {
     pub data: *const f32,
     pub shape: [usize; 2],
@@ -37,9 +38,9 @@ pub struct MLMultiArray2DInfo {
 }
 
 #[repr(C)]
-pub struct RoomLayout {
+pub struct RoomLayoutData {
     /// Identified room layout lines
-    pub lines: [Line; 8],
+    pub lines: [LayoutLine; 8],
     /// Indicates how many actual lines are stored in [lines] (at most 8)
     pub num_lines: u8,
     /// LSUN room type
@@ -52,25 +53,25 @@ pub struct RoomLayout {
 
 #[repr(C)]
 #[derive(Default)]
-pub struct Point {
+pub struct LayoutPoint {
     pub x: i32,
     pub y: i32,
 }
 
 #[repr(C)]
 #[derive(Default)]
-pub struct Line {
-    pub start: Point,
-    pub end: Point,
+pub struct LayoutLine {
+    pub start: LayoutPoint,
+    pub end: LayoutPoint,
 }
 
 #[repr(C)]
 #[derive(Default)]
 pub struct WallPolygon {
-    pub top_left: Point,
-    pub top_right: Point,
-    pub bottom_right: Point,
-    pub bottom_left: Point,
+    pub top_left: LayoutPoint,
+    pub top_right: LayoutPoint,
+    pub bottom_right: LayoutPoint,
+    pub bottom_left: LayoutPoint,
 }
 
 impl MLMultiArray2DInfo {
@@ -242,11 +243,12 @@ pub extern "C" fn shipping_rust_addition(a: c_int, b: c_int) -> c_int {
 
 #[no_mangle]
 pub extern "C" fn process_room_layout_estimation_results(
-    results: *const RoomLayoutEstimationResults,
-    image_info: *const RgbaImageInfo,
-) -> *const u8 {
+    results: *const RoomLayoutEstimationResults
+) -> RoomLayoutData {
     let results_ref = unsafe { &*results };
 
+    println!("Processing room layout estimation results");
+    println!("Type array info: {:?}", results_ref.type_);
     let type_array = results_ref.type_.array();
     println!("Type array: {type_array:?}");
 
@@ -280,19 +282,19 @@ pub extern "C" fn process_room_layout_estimation_results(
     let mut wall_polygons: [WallPolygon; 3] = Default::default();
     for (idx, polygon) in polygons.iter().enumerate() {
         // TODO: could use `From` impl
-        let top_left = Point {
+        let top_left = LayoutPoint {
             x: polygon.top_left.0,
             y: polygon.top_left.1,
         };
-        let top_right = Point {
+        let top_right = LayoutPoint {
             x: polygon.top_right.0,
             y: polygon.top_right.1,
         };
-        let bottom_right = Point {
+        let bottom_right = LayoutPoint {
             x: polygon.bottom_right.0,
             y: polygon.bottom_right.1,
         };
-        let bottom_left = Point {
+        let bottom_left = LayoutPoint {
             x: polygon.bottom_left.0,
             y: polygon.bottom_left.1,
         };
@@ -305,50 +307,26 @@ pub extern "C" fn process_room_layout_estimation_results(
     }
     let num_wall_polygons = polygons.len() as u8;
 
-    let mut lines: [Line; 8] = Default::default();
+    let mut lines: [LayoutLine; 8] = Default::default();
     for (idx, (start, end)) in parse_result.lines.iter().enumerate() {
-        let line = Line {
-            start: Point {
+        let line = LayoutLine {
+            start: LayoutPoint {
                 x: start.0,
                 y: start.1,
             },
-            end: Point { x: end.0, y: end.1 },
+            end: LayoutPoint { x: end.0, y: end.1 },
         };
         lines[idx] = line;
     }
     let num_lines = parse_result.lines.len() as u8;
 
-    let room_layout = RoomLayout {
+    RoomLayoutData {
         lines,
         num_lines,
         room_type: parse_result.room_type,
         wall_polygons,
         num_wall_polygons,
-    };
-    // TODO: return this
-
-    // FIXME: visualization for debug
-    let image_info = unsafe { ptr::read(image_info) };
-
-    let data_slice = unsafe { slice::from_raw_parts(image_info.data, image_info.count) };
-    let buffer = data_slice.to_vec();
-    let mut image =
-        RgbaImage::from_raw(image_info.width as u32, image_info.height as u32, buffer).unwrap();
-
-    for (p1, p2) in parse_result.lines {
-        drawing::draw_line_segment_mut(
-            &mut image,
-            (p1.0 as f32, p1.1 as f32),
-            (p2.0 as f32, p2.1 as f32),
-            Rgba([255, 2, 2, 255]),
-        )
     }
-
-    let raw = image.as_raw().clone();
-    let ptr = raw.as_ptr();
-    // TODO: memory leak, need to release later from rust
-    mem::forget(raw);
-    ptr
 }
 
 #[cfg(test)]

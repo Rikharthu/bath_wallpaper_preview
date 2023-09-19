@@ -17,6 +17,46 @@ typedef struct SegmentationMap {
   uintptr_t strides[2];
 } SegmentationMap;
 
+typedef struct LayoutPoint {
+  int32_t x;
+  int32_t y;
+} LayoutPoint;
+
+typedef struct LayoutLine {
+  struct LayoutPoint start;
+  struct LayoutPoint end;
+} LayoutLine;
+
+typedef struct WallPolygon {
+  struct LayoutPoint top_left;
+  struct LayoutPoint top_right;
+  struct LayoutPoint bottom_right;
+  struct LayoutPoint bottom_left;
+} WallPolygon;
+
+typedef struct RoomLayoutData {
+  /**
+   * Identified room layout lines
+   */
+  struct LayoutLine lines[8];
+  /**
+   * Indicates how many actual lines are stored in [lines] (at most 8)
+   */
+  uint8_t num_lines;
+  /**
+   * LSUN room type
+   */
+  uint8_t room_type;
+  /**
+   * Reconstructed wall polygons based on room type
+   */
+  struct WallPolygon wall_polygons[3];
+  /**
+   * Indicates how many actual wall polygons are stored in [polygons] (at most 3)
+   */
+  uint8_t num_wall_polygons;
+} RoomLayoutData;
+
 typedef struct MLMultiArray3DInfo {
   const float *data;
   uintptr_t shape[3];
@@ -44,5 +84,4 @@ void process_segmentation_map(const struct SegmentationMap *segmentation_map);
 
 int shipping_rust_addition(int a, int b);
 
-const uint8_t *process_room_layout_estimation_results(const struct RoomLayoutEstimationResults *results,
-                                                      const struct RgbaImageInfo *image_info);
+struct RoomLayoutData process_room_layout_estimation_results(const struct RoomLayoutEstimationResults *results);
