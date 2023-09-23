@@ -1,6 +1,6 @@
 import CoreML
 import SwiftUI
-//import Vision
+// import Vision
 
 struct ContentView: View {
 //    @StateObject private var viewModel = ContentViewModel()
@@ -16,9 +16,7 @@ struct ContentView: View {
     @State private var selectedTab: TabType = .home
 
     var body: some View {
-        
         NavigationStack {
-            
             VStack(spacing: 0) {
                 TabView(selection: $selectedTab) {
                     Color(.red)
@@ -30,8 +28,7 @@ struct ContentView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 
                 BottomTabBarView(
-                    onPreviewButtonTapped: {
-                    },
+                    onPreviewButtonTapped: {},
                     selectedTab: $selectedTab
                 )
             }
@@ -42,6 +39,12 @@ struct ContentView: View {
                     PreviewGenerationScreen()
                 }
             }
+        }
+        .task {
+            // TODO: check if we are in a debug configuration, and seed initial data if not already
+            #if DEBUG
+                await seedInitialDataIfNeeded()
+            #endif
         }
         
 //        VStack {
@@ -135,9 +138,9 @@ struct ContentView: View {
 //        print("Image orientation: \(sourceImageOrientation)")
 //        print("Image scale: \(sourceImageScale)")
 //
-////        let segmentationModel = try! VNCoreMLModel(
-////            for: SegmentationModel_with_metadata(configuration: modelConfiguration).model
-////        )
+    ////        let segmentationModel = try! VNCoreMLModel(
+    ////            for: SegmentationModel_with_metadata(configuration: modelConfiguration).model
+    ////        )
 //
 //
 //        let segmentationModel = {

@@ -122,6 +122,14 @@ class FileHelper {
         return saveImageToDirectory(image: image, directoryUrl: wallpapersDirectory)
     }
     
+    func loadWallpaperPhoto(id: String) -> Result<UIImage, Error> {
+        let filePath = wallpaperPhotoUrlForId(id).path
+        guard let image = UIImage(contentsOfFile: filePath) else {
+            return .failure(FileHelperError.runtimeError("Could not load image from path \(filePath)"))
+        }
+        return .success(image)
+    }
+    
     func deleteWallpaperPhoto(id: String) -> Result<Void, Error> {
         switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: wallpapersDirectory) {
         case .success(true):
@@ -179,6 +187,22 @@ class FileHelper {
         return .success(mediaFile)
     }
     
+    func loadRoomLayout(id: String) -> Result<RoomLayout?, Error> {
+        let fileUrl = roomLayoutFileUrlForId(id)
+        
+        if !fileManager.fileExists(atPath: fileUrl.path) {
+            // TODO: ideally we would handle non-existend mask as specific error enum variant
+            return .success(nil)
+        }
+        
+        do {
+            let jsonData = try Data(contentsOf: fileUrl)
+            let roomLayout = try JSONDecoder().decode(RoomLayout.self, from: jsonData)
+            return .success(roomLayout)
+        } catch {
+            return .failure(error)
+        }
+    }
     
     private func saveImageToDirectory(image: UIImage, id: String, directoryUrl: URL) -> Result<MediaFile, Error> {
         let fileName = imageFileNameForId(id)
@@ -274,7 +298,7 @@ class FileHelper {
         roomLayoutsDirectory.appendingPathComponent(jsonFileNameForId(id))
     }
     
-    private func wallpaperFileUrlForId(_ id: String) -> URL {
+    private func wallpaperPhotoUrlForId(_ id: String) -> URL {
         wallpapersDirectory.appendingPathComponent(imageFileNameForId(id))
     }
     

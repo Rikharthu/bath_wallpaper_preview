@@ -9,7 +9,7 @@ import CoreML
 import SwiftUI
 import Vision
 
-class RoomInferenceHelper {
+final class RoomInferenceHelper {
     
     func extractRoomLayout(_ image: UIImage) async -> Result<[VNObservation], Error> {
         let fixedImage = image.fixOrientation()

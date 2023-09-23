@@ -113,11 +113,23 @@ pub struct RoomLayoutEstimationResults {
     pub type_: MLMultiArray2DInfo,
 }
 
+#[no_mangle]
+pub extern "C" fn release_image_buffer(buffer_ptr: *const u8, length: usize) {
+    unsafe { 
+        let slice_ptr = std::ptr::slice_from_raw_parts(buffer_ptr, length) as *mut u8;
+        let _ = Box::from_raw(slice_ptr);
+    }
+}
+
 // TODO: add a method to generate tileable results
 //   See "API - 07_tiling_texture" of https://crates.io/crates/texture-synthesis
 // TODO: return RgbaImageInfo as well or specify it as dst
 #[no_mangle]
-pub extern "C" fn synthesize_texture(sample_info: *const RgbaImageInfo) -> *const u8 {
+pub extern "C" fn synthesize_texture(
+    sample_info: *const RgbaImageInfo,
+    input_resize: u32,
+    output_size: u32
+) -> *const u8 {
     let sample_info = unsafe { ptr::read(sample_info) };
 
     let data_slice = unsafe { slice::from_raw_parts(sample_info.data, sample_info.count) };
@@ -138,11 +150,13 @@ pub extern "C" fn synthesize_texture(sample_info: *const RgbaImageInfo) -> *cons
     // By default texture synthesis uses all CPUs, but we still specify it explicitly
     let cpu_count = num_cpus::get();
     println!("Number of CPUs available: {}", cpu_count);
+    // TODO: fine-tune parameters
     let textsynth = ts::Session::builder()
         .add_example(example)
         .max_thread_count(cpu_count)
-        .resize_input(Dims::square(64))
-        .output_size(Dims::square(256))
+        .resize_input(Dims::square(input_resize))
+        .output_size(Dims::square(output_size))
+        .tiling_mode(true)
         .build()
         .expect("Could not build texture synthesis session");
     println!("Synthesizing...");
@@ -154,12 +168,15 @@ pub extern "C" fn synthesize_texture(sample_info: *const RgbaImageInfo) -> *cons
     println!("{}x{}", result_image.width(), result_image.height());
 
     let result_image_rgba = result_image.as_rgba8().unwrap();
-    let raw = result_image_rgba.as_raw().clone();
-    println!("Raw buffer length: {}", raw.len());
-    let ptr = raw.as_ptr();
-    mem::forget(raw);
-    ptr
+    let buffer_vec = result_image_rgba.as_raw().clone();
+    let buffer_slice = buffer_vec.into_boxed_slice();
+    let buffer_len = buffer_slice.len();
+    println!("Buffer length: {buffer_len}");
+    let buffer_ptr = Box::into_raw(buffer_slice) as *const u8;
+    return buffer_ptr
 }
+
+
 
 struct GeneratorProgressLogger;
 
@@ -243,7 +260,7 @@ pub extern "C" fn shipping_rust_addition(a: c_int, b: c_int) -> c_int {
 
 #[no_mangle]
 pub extern "C" fn process_room_layout_estimation_results(
-    results: *const RoomLayoutEstimationResults
+    results: *const RoomLayoutEstimationResults,
 ) -> RoomLayoutData {
     let results_ref = unsafe { &*results };
 

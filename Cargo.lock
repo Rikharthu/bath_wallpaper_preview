@@ -1273,6 +1273,7 @@ dependencies = [
  "imageproc",
  "lsun_res_parser",
  "ndarray",
+ "ndarray-npy",
  "ndarray-stats",
  "num_cpus",
  "polyfit-rs",

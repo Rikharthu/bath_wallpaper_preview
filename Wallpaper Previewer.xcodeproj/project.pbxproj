@@ -32,6 +32,7 @@
 		D53511622ABA11F4009B9029 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511612ABA11F4009B9029 /* Point.swift */; };
 		D53511642ABA125C009B9029 /* Polygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511632ABA125C009B9029 /* Polygon.swift */; };
 		D53511662ABA12E7009B9029 /* RoomLayout+Conversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */; };
+		D53D25B32ABDF8ED005846E0 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53D25B22ABDF8ED005846E0 /* SeedData.swift */; };
 		D548879A29ABB016003A543B /* SegmentationVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D548879929ABB016003A543B /* SegmentationVisualizationView.swift */; };
 		D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */; };
 		D54887A729ABD120003A543B /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A629ABD120003A543B /* Math.swift */; };
@@ -41,6 +42,7 @@
 		D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */; };
 		D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */; };
 		D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */; };
+		D584957D2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */; };
 		D5852D0A2987014D00877628 /* libtexture_synthesis_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5852D08298700D600877628 /* libtexture_synthesis_adapter.a */; };
 		D58811A2299E26F2000F815C /* Wallpaper_Previewer_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58811A1299E26F2000F815C /* Wallpaper_Previewer_Tests.swift */; };
 		D58811AF299E27F7000F815C /* Wallpaper_Previewer_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58811AE299E27F7000F815C /* Wallpaper_Previewer_UITests.swift */; };
@@ -64,7 +66,6 @@
 		D5897FE52AB873170099E31E /* RoomInferenceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */; };
 		D5A41CB829E1D84400693D9C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = D5A41CB729E1D84400693D9C /* ComposableArchitecture */; };
 		D5A41CBA29E1D86800693D9C /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A41CB929E1D86800693D9C /* Feature.swift */; };
-		D5AD2D7729B4E7FF00C25B03 /* water.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = D5AD2D7629B4E7FF00C25B03 /* water.jpeg */; };
 		D5BB738629AE8C9300C1C885 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB738529AE8C9300C1C885 /* Orientation.swift */; };
 /* End PBXBuildFile section */
 
@@ -113,6 +114,7 @@
 		D53511612ABA11F4009B9029 /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		D53511632ABA125C009B9029 /* Polygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polygon.swift; sourceTree = "<group>"; };
 		D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomLayout+Conversions.swift"; sourceTree = "<group>"; };
+		D53D25B22ABDF8ED005846E0 /* SeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedData.swift; sourceTree = "<group>"; };
 		D548879929ABB016003A543B /* SegmentationVisualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationVisualizationView.swift; sourceTree = "<group>"; };
 		D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Helpers.swift"; sourceTree = "<group>"; };
 		D54887A629ABD120003A543B /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 		D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = flip_combined_layoutnet_persp_mlprogram.mlpackage; sourceTree = "<group>"; };
 		D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
+		D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperSynthesisHelper.swift; sourceTree = "<group>"; };
 		D5852D032985B67900877628 /* FfiBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfiBridge.h; sourceTree = "<group>"; };
 		D5852D08298700D600877628 /* libtexture_synthesis_adapter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtexture_synthesis_adapter.a; path = target/release/libtexture_synthesis_adapter.a; sourceTree = "<group>"; };
 		D588119F299E26F2000F815C /* Wallpaper Previewer Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Wallpaper Previewer Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,7 +151,6 @@
 		D5897FE22AB86E560099E31E /* PreviewGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewGenerationView.swift; sourceTree = "<group>"; };
 		D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInferenceHelper.swift; sourceTree = "<group>"; };
 		D5A41CB929E1D86800693D9C /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
-		D5AD2D7629B4E7FF00C25B03 /* water.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = water.jpeg; sourceTree = "<group>"; };
 		D5BB738529AE8C9300C1C885 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -267,7 +269,6 @@
 				D57AEDB42A9A278A005A6E9A /* Models */,
 				D5897FB02AB3769A0099E31E /* ViewModels */,
 				D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */,
-				D5AD2D7629B4E7FF00C25B03 /* water.jpeg */,
 				D513A1F2298D71F500771077 /* Utils */,
 				D5088FB02982A78100088359 /* ImagePicker.swift */,
 				D5852D032985B67900877628 /* FfiBridge.h */,
@@ -279,6 +280,7 @@
 				D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */,
 				D5088FA62982A77300088359 /* Assets.xcassets */,
 				D5088FA82982A77300088359 /* Preview Content */,
+				D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */,
 			);
 			path = "Wallpaper Previewer";
 			sourceTree = "<group>";
@@ -301,6 +303,7 @@
 				D5BB738529AE8C9300C1C885 /* Orientation.swift */,
 				D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */,
 				D53511652ABA12E7009B9029 /* RoomLayout+Conversions.swift */,
+				D53D25B22ABDF8ED005846E0 /* SeedData.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -518,7 +521,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5AD2D7729B4E7FF00C25B03 /* water.jpeg in Resources */,
 				D5088FAA2982A77300088359 /* Preview Assets.xcassets in Resources */,
 				D5088FA72982A77300088359 /* Assets.xcassets in Resources */,
 			);
@@ -595,6 +597,7 @@
 				D513A1F4298D721300771077 /* UIImage+Conversions.swift in Sources */,
 				D5897FB82AB47C240099E31E /* InfoPanelView.swift in Sources */,
 				D50380A62AB2001D007933A6 /* GalleryScreen.swift in Sources */,
+				D53D25B32ABDF8ED005846E0 /* SeedData.swift in Sources */,
 				D5897FDF2AB86BB30099E31E /* PreviewGenerationScreen+ViewModel.swift in Sources */,
 				D50380C02AB21238007933A6 /* TabBarItemView.swift in Sources */,
 				D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */,
@@ -611,6 +614,7 @@
 				D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */,
 				D5897FAF2AB376750099E31E /* GalleryGridView.swift in Sources */,
 				D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */,
+				D584957D2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift in Sources */,
 				D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */,
 				D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */,
 				D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */,
@@ -855,9 +859,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=arm64]" = "$(PROJECT_DIR)/target/aarch64-apple-ios/debug";
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=arm64]" = "$(PROJECT_DIR)/target/aarch64-apple-ios-sim/debug";
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=x86_64]" = "$(PROJECT_DIR)/target/x86_64-apple-ios/debug";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*][arch=arm64]" = "$(PROJECT_DIR)/target/aarch64-apple-ios/release";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=arm64]" = "$(PROJECT_DIR)/target/aarch64-apple-ios-sim/release";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*][arch=x86_64]" = "$(PROJECT_DIR)/target/x86_64-apple-ios/release";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "lv.rikharthu.Wallpaper-Previewer";
 				PRODUCT_NAME = "$(TARGET_NAME)";

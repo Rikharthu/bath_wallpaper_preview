@@ -50,6 +50,7 @@ extension PreviewGenerationScreen {
         
         private let inferenceHelper = RoomInferenceHelper()
         private let fileHelper = FileHelper.shared
+        private let wallpaperSynthesisHelper = WallpaperSynthesisHelper()
         
         private func updateCurrentTabIfNeeded() {
             if roomPhoto == nil {
@@ -73,6 +74,10 @@ extension PreviewGenerationScreen {
                 previewGenerationStatus = .error("Room photo missing")
                 return
             }
+            guard let wallpaperPhotoFile = wallpaperPhoto else {
+                previewGenerationStatus = .error("Wallpaper photo missing")
+                return
+            }
             
             let segmentationImage: UIImage
             switch await prepareRoomSegmentationMask(roomPhotoFile: roomPhotoFile) {
@@ -84,20 +89,67 @@ extension PreviewGenerationScreen {
                 return
             }
             
-            // FIXME: visualization made for debug
-            self.segmentationImage = segmentationImage
-            
             // MARK: - Layout extraction
-
             previewGenerationStatus = .layout
+            
+            let roomLayout: RoomLayout
+            switch await prepareRoomLayout(roomPhotoFile: roomPhotoFile) {
+            case .success(let layout):
+                roomLayout = layout
+                print("Successfully prepared room layout: \(roomLayout)")
+            case .failure(let error):
+                print("Could not prepare room layout: \(error)")
+                previewGenerationStatus = .error(error.message)
+                return
+            }
+           
+            // MARK: - Texture synthesis
+            previewGenerationStatus = .textureSynthesis
+            
+            let wallpaperPhotoImage: UIImage
+            switch fileHelper.loadWallpaperPhoto(id: wallpaperPhotoFile.id) {
+            case .success(let image):
+                wallpaperPhotoImage = image
+            case .failure(let error):
+                print("Could not load wallpaper photo: \(error)")
+                // TODO: error handling
+                return
+            }
+            
+            // TODO: returned data must be released from Rust!
+            let synthesisResult = await wallpaperSynthesisHelper.synthesizeWallpaperTile(fromPhoto: wallpaperPhotoImage)
+            
+            // TODO: preprocess image before synthesizing: normalize lightning, flares, etc. Potentially, add this as TODO in Dissertation
+            
+            switch synthesisResult {
+            case .success(let synthesizedImage):
+                // FIXME: for debug
+                self.segmentationImage = synthesizedImage
+            case .failure(let error):
+                print("Could not synthesize wallpaper tile image: \(error)")
+                break
+            }
+            
+            
+            
+        }
+        
+        private func prepareRoomLayout(roomPhotoFile: MediaFile) async -> Result<RoomLayout, PreviewError> {
+            // Check if we have cached room layout for this photo to avoid unnecessary computation
+            let cachedRoomLayout = fileHelper.loadRoomLayout(id: roomPhotoFile.id)
+            if case .success(let roomLayout) = cachedRoomLayout, roomLayout != nil {
+                print("Loaded cached room layout")
+                return .success(roomLayout!)
+            }
+            
+            print("Could not load cached room layout, will perform new inference")
             
             let roomPhotoImage: UIImage
             switch fileHelper.loadRoomPhoto(id: roomPhotoFile.id) {
             case .success(let image):
                 roomPhotoImage = image
             case .failure(let error):
-                // TODO: Handle
-                return
+                return .failure(PreviewError(message: "Could not load room photo: \(error)"))
             }
             
             let layoutObservations: [VNCoreMLFeatureValueObservation]
@@ -105,7 +157,7 @@ extension PreviewGenerationScreen {
             switch layoutInferenceResults {
             case .success(let observations):
                 if observations.count != 4 {
-                    fatalError("Unexpected number of layout observations: \(observations.count)")
+                    fatalError("Unexpected number of layout observations: \(observations.count) != 4")
                 }
                 layoutObservations = [
                     observations[0] as! VNCoreMLFeatureValueObservation,
@@ -114,9 +166,7 @@ extension PreviewGenerationScreen {
                     observations[3] as! VNCoreMLFeatureValueObservation,
                 ]
             case .failure(let error):
-                print("Layout inference failed: \(error)")
-                // TODO: handle
-                return
+                return .failure(PreviewError(message: "Layout inference failed: \(error)"))
             }
             
             // MARK: Parsing layout results
@@ -139,7 +189,6 @@ extension PreviewGenerationScreen {
             guard type.featureName == "type" else {
                 fatalError("Unexpected type features name: \"\(type.featureName)\"")
             }
-            
             
             let edgesArray: MLMultiArray = edges.featureValue.multiArrayValue!
             let cornersArray: MLMultiArray = corners.featureValue.multiArrayValue!
@@ -184,23 +233,16 @@ extension PreviewGenerationScreen {
             
             let roomLayout = process_room_layout_estimation_results(&roomLayoutEstimationResults).model
             
-            
             print("Processed room layout: \(roomLayout)")
             
             switch fileHelper.saveRoomLayout(id: roomPhotoFile.id, roomLayout: roomLayout) {
             case .success(let roomLayoutFile):
                 print("Successfully saved room layout data to: \(roomLayoutFile.filePath)")
             case .failure(let error):
-                print("Could not save room layout data: \(error)")
-                // TODO: return error
+                return .failure(PreviewError(message: "Could not save room layout data: \(error)"))
             }
            
-            
-            // TODO: misclassification could be partially resolved by parsing using similar room types, and presenting user multiple candidates for him to select the best result. We're mostly wrong because of incorrect room type.
-            
-            
-            
-            
+            return .success(roomLayout)
         }
         
         private func prepareRoomSegmentationMask(roomPhotoFile: MediaFile) async -> Result<UIImage, PreviewError> {

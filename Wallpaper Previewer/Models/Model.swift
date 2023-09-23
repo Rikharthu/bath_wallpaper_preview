@@ -9,6 +9,8 @@ import Foundation
 import CoreML
 import Vision
 
+// TODO: delete
+
 // MARK: -- Room layout estimation network
 func createRoomLayoutEstimationModel() -> VNCoreMLModel {
     let start = DispatchTime.now()

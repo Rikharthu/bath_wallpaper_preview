@@ -1454,9 +1454,9 @@ fn compute_wall_polygons_for_room_type_10(lines: &Vec<Line>, image_height: i32) 
 mod tests {
     use crate::polygons::{
         compute_line_intercept_at_point, compute_line_params, compute_line_y_at_x,
-        compute_lines_intersection_point, compute_room_layout_polygons,
-        compute_wall_polygon_for_room_type_6, compute_wall_polygon_for_room_type_8,
-        compute_wall_polygon_for_room_type_9, compute_wall_polygons_for_room_type_0,
+        compute_lines_intersection_point, compute_wall_polygon_for_room_type_6,
+        compute_wall_polygon_for_room_type_8, compute_wall_polygon_for_room_type_9,
+        compute_wall_polygons, compute_wall_polygons_for_room_type_0,
         compute_wall_polygons_for_room_type_1, compute_wall_polygons_for_room_type_10,
         compute_wall_polygons_for_room_type_2, compute_wall_polygons_for_room_type_3,
         compute_wall_polygons_for_room_type_4, compute_wall_polygons_for_room_type_5,
@@ -1467,7 +1467,137 @@ mod tests {
     use imageproc::definitions::HasBlack;
     use imageproc::drawing;
     use lsun_res_parser::{Line, RoomLayoutInfo};
-    use std::path::PathBuf;
+    use ndarray::{Array1, Array2, Axis};
+    use ndarray_stats::QuantileExt;
+    use serde::{Deserialize, Serialize};
+    use std::{fs::File, io::{BufReader, BufWriter}, path::PathBuf};
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct LinesData {
+        pub lines: Vec<((i32, i32), (i32, i32))>,
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct RoomLayoutData {
+        #[serde(rename = "roomType")]
+        pub room_type: u8,
+        pub edges: Vec<LineData>,
+        #[serde(rename = "wallPolygons")]
+        pub wall_polygons: Vec<PolygonData>
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct PointData {
+        pub x: i32,
+        pub y: i32,
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct LineData {
+        pub start: PointData,
+        pub end: PointData,
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct PolygonData {
+        #[serde(rename = "topLeft")]
+        pub top_left: PointData,
+        #[serde(rename = "topRight")]
+        pub top_right: PointData,
+        #[serde(rename = "bottomRight")]
+        pub bottom_right: PointData,
+        #[serde(rename = "bottomLeft")]
+        pub bottom_left: PointData
+    }
+
+    #[test]
+    fn prepare_seed_data() {
+        let image_height = 512;
+        let image_width = 512;
+
+        let results_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
+
+        let indices_file_path = results_dir.join("indices.npy");
+        let indices: Array1<i32> = ndarray_npy::read_npy(indices_file_path).unwrap();
+        println!("Indices: {indices:?}");
+
+        for i in indices.iter() {
+            let lines_file_name = format!("lines_{i}.json");
+            let lines_file_path = results_dir.join(lines_file_name);
+
+            println!("Reading {lines_file_path:?}");
+
+            let lines_file = File::open(lines_file_path).unwrap();
+            let mut reader = BufReader::new(lines_file);
+            let lines_data: LinesData = serde_json::from_reader(&mut reader).unwrap();
+
+            let room_type_file_name = format!("type_{i}.npy");
+            let room_type_file_path = results_dir.join(room_type_file_name);
+            let room_type: Array2<f32> = ndarray_npy::read_npy(room_type_file_path).unwrap();
+            let room_type = room_type.mean_axis(Axis(0)).unwrap();
+            let room_type = room_type.argmax().unwrap() as u8;
+
+            let polygons =
+                compute_wall_polygons(&lines_data.lines, image_width, image_height, room_type);
+            println!("{polygons:?}");
+
+            // TODO: save JSON file compatible with out Swift class
+
+            // FIXME: for debug
+            let edges: Vec<LineData> = lines_data
+                .lines
+                .iter()
+                .map(|line| {
+                    let start = line.0;
+                    let start = PointData {
+                        x: start.0,
+                        y: start.1,
+                    };
+                    let end = line.1;
+                    let end = PointData { x: end.0, y: end.1 };
+                    LineData { start, end }
+                })
+                .collect();
+
+            let wall_polygons: Vec<PolygonData> = polygons.iter().map(|polygon| {
+                let top_left = PointData{ x: polygon.top_left.0, y: polygon.top_left.1 };
+                let top_right = PointData{ x: polygon.top_right.0, y: polygon.top_right.1 };
+                let bottom_right = PointData{ x: polygon.bottom_right.0, y: polygon.bottom_right.1 };
+                let bottom_left = PointData{ x: polygon.bottom_left.0, y: polygon.bottom_left.1 };
+                PolygonData { 
+                    top_left, 
+                    top_right, 
+                    bottom_right, 
+                    bottom_left 
+                }
+            }).collect();
+
+            let room_layout = RoomLayoutData {
+                room_type,
+                edges,
+                wall_polygons,
+            };
+
+            let room_layout_file_name = format!("layout_{i}.json");
+            let room_layout_file_path = results_dir.join(room_layout_file_name);
+            let room_layout_file = File::create(room_layout_file_path).unwrap();
+            let mut writer = BufWriter::new(room_layout_file);
+            serde_json::to_writer(writer, &room_layout).unwrap();
+            
+
+            // let images_dir = PathBuf::from(
+            //     "/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img",
+            // );
+            // let image_path = images_dir.join(format!("{i}.png"));
+            // let src_image = image::open(image_path).unwrap().into_rgb8();
+
+            // let overlay_image = draw_lines_on_padded_image(&src_image, &lines, 200);
+
+            // let output_dir = PathBuf::from("./out");
+            // let output_image_path = output_dir.join(format!("{i}.png"));
+            // overlay_image.save(output_image_path).unwrap();
+        }
+    }
 
     #[test]
     fn compute_and_draw_polygons_for_room_type_0() {

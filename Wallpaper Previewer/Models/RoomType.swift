@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RoomType: Codable {
+enum RoomType: Int, Codable {
     case type0
     case type1
     case type2

@@ -19,6 +19,9 @@ if [[ "$BUILDVARIANT" != "debug" ]]; then
   RELFLAG=--release
 fi
 
+# TODO: Enforce --release mode to make synthesis faster in debug mode
+RELFLAG=--release
+
 set -euvx
 
 if [[ -n "${DEVELOPER_SDK_DIR:-}" ]]; then
