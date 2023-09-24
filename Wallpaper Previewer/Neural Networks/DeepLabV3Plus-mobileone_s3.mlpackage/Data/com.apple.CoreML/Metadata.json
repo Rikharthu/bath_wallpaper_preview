@@ -1,0 +1,7 @@
+{
+  "MLModelDescriptionKey" : "Wall segmentation model",
+  "MLModelCreatorDefinedKey" : {
+    "com.github.apple.coremltools.version" : "6.3.0",
+    "com.github.apple.coremltools.source" : "torch==2.0.0+cu118"
+  }
+}

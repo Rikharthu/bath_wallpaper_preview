@@ -1,0 +1,24 @@
+{
+  "Outputs" : {
+    "edges" : {
+      "MLFeatureShortDescription" : ""
+    },
+    "corners" : {
+      "MLFeatureShortDescription" : ""
+    },
+    "corners_flip" : {
+      "MLFeatureShortDescription" : ""
+    },
+    "type" : {
+      "MLFeatureShortDescription" : ""
+    }
+  },
+  "Inputs" : {
+    "input" : {
+      "MLFeatureShortDescription" : ""
+    }
+  },
+  "TrainingInputs" : {
+
+  }
+}

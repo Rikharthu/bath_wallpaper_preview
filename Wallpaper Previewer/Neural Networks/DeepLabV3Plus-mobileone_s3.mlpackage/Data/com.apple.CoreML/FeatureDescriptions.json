@@ -1,0 +1,15 @@
+{
+  "Outputs" : {
+    "output" : {
+      "MLFeatureShortDescription" : "Wall segmentation map"
+    }
+  },
+  "Inputs" : {
+    "input" : {
+      "MLFeatureShortDescription" : "Input RGB image"
+    }
+  },
+  "TrainingInputs" : {
+
+  }
+}
