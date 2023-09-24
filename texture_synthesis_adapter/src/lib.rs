@@ -1,12 +1,13 @@
 mod polygons;
 
-use image::{DynamicImage, GenericImageView, Pixel, Rgba, RgbaImage};
-use imageproc::drawing;
+use image::{DynamicImage, Rgba, RgbaImage, RgbImage};
+use imageproc::drawing::draw_filled_rect_mut;
+use imageproc::rect::Rect;
 use lsun_res_parser::parse_lsun_results;
 use ndarray::{Array2, Array3, Axis, ShapeBuilder};
 use ndarray_stats::QuantileExt;
 use std::os::raw::c_int;
-use std::{default, mem, ptr, slice};
+use std::{mem, ptr, slice};
 use texture_synthesis as ts;
 use texture_synthesis::session::{GeneratorProgress, ProgressUpdate};
 use texture_synthesis::Dims;
@@ -127,8 +128,7 @@ pub extern "C" fn release_image_buffer(buffer_ptr: *const u8, length: usize) {
 #[no_mangle]
 pub extern "C" fn synthesize_texture(
     sample_info: *const RgbaImageInfo,
-    input_resize: u32,
-    output_size: u32
+    input_resize: u32
 ) -> *const u8 {
     let sample_info = unsafe { ptr::read(sample_info) };
 
@@ -150,15 +150,27 @@ pub extern "C" fn synthesize_texture(
     // By default texture synthesis uses all CPUs, but we still specify it explicitly
     let cpu_count = num_cpus::get();
     println!("Number of CPUs available: {}", cpu_count);
-    // TODO: fine-tune parameters
+    
+    let input_resize_dims = Dims::square(input_resize);
+
+    // Prepare inpaint mask so that only border pixels will be synthesized
+    let mask = generate_mask_image(
+        input_resize_dims, 
+        0.16
+    );
+    let mask = ts::ImageSource::Image(DynamicImage::from(mask));
+
     let textsynth = ts::Session::builder()
-        .add_example(example)
+        .backtrack_stages(20)
         .max_thread_count(cpu_count)
-        .resize_input(Dims::square(input_resize))
-        .output_size(Dims::square(output_size))
         .tiling_mode(true)
+        .inpaint_example(mask, example, input_resize_dims)
+        .cauchy_dispersion(1.0)
+        .nearest_neighbors(50)
+        .random_sample_locations(50)
         .build()
-        .expect("Could not build texture synthesis session");
+        .expect("Could not prepare texture synthesis session");
+
     println!("Synthesizing...");
 
     let logger = Box::new(GeneratorProgressLogger);
@@ -176,7 +188,40 @@ pub extern "C" fn synthesize_texture(
     return buffer_ptr
 }
 
+fn generate_mask_image(size: Dims, ratio: f32) -> RgbImage {
+    assert!((0f32..=1f32).contains(&ratio));
 
+    let mut image: RgbaImage = RgbaImage::from_pixel(
+        size.width,
+        size.width,
+        Rgba::from([255u8, 255u8, 255u8, 255u8]),
+    );
+
+    let width = image.width();
+    let height = image.height();
+
+    // TODO: use width for left and right, and height for top and bottom
+    let rect_side = (width as f32 / 2.0 * ratio) as u32;
+    let black = Rgba::from([0u8, 0u8, 0u8, 255u8]);
+    // Top
+    draw_filled_rect_mut(&mut image, Rect::at(0, 0).of_size(width, rect_side), black);
+    // Right
+    draw_filled_rect_mut(
+        &mut image,
+        Rect::at((width - rect_side) as i32, 0).of_size(rect_side, height),
+        black,
+    );
+    // Bottom
+    draw_filled_rect_mut(
+        &mut image,
+        Rect::at(0, (height - rect_side) as i32).of_size(width, rect_side),
+        black,
+    );
+    // Left
+    draw_filled_rect_mut(&mut image, Rect::at(0, 0).of_size(rect_side, height), black);
+
+    DynamicImage::ImageRgba8(image).to_rgb8()
+}
 
 struct GeneratorProgressLogger;
 

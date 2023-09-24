@@ -155,6 +155,24 @@ class FileHelper {
         return getMediaFiles(fromDirectory: wallpapersDirectory)
     }
     
+    func saveWallpaperTile(image: UIImage, id: String) -> Result<MediaFile, Error> {
+        return saveImageToDirectory(image: image, id: id, directoryUrl: wallpaperTilesDirectory)
+    }
+    
+    func loadWallpaperTile(id: String) -> Result<UIImage?, Error> {
+        let filePath = wallpaperTileUrlForId(id).path
+        
+        if !fileManager.fileExists(atPath: filePath) {
+            // TODO: ideally we would handle non-existend mask as specific error enum variant
+            return .success(nil)
+        }
+        
+        guard let image = UIImage(contentsOfFile: filePath) else {
+            return .failure(FileHelperError.runtimeError("Could not load image from path \(filePath)"))
+        }
+        return .success(image)
+    }
+    
     func saveRoomMask(image: UIImage, id: String) -> Result<MediaFile, Error> {
         return saveImageToDirectory(image: image, id: id, directoryUrl: roomMasksDirectory)
     }
@@ -302,7 +320,7 @@ class FileHelper {
         wallpapersDirectory.appendingPathComponent(imageFileNameForId(id))
     }
     
-    private func wallpaperTileFileUrlForId(_ id: String) -> URL {
+    private func wallpaperTileUrlForId(_ id: String) -> URL {
         wallpaperTilesDirectory.appendingPathComponent(imageFileNameForId(id))
     }
     

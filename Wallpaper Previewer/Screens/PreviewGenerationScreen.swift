@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct PreviewGenerationScreen: View {
-    
+    @Environment(\.presentationMode)
+    private var presentationMode: Binding<PresentationMode>
     @StateObject
     private var viewModel = ViewModel()
     // TODO: launch preview creation flow
@@ -36,10 +37,36 @@ struct PreviewGenerationScreen: View {
                 viewModel: viewModel
             ).tag(PreviewStep.preparePreview)
             
+            // TODO: when done generating preview, show pinch view with this image and navigation must exit. make it an additional PreviewStep variant
             
+            
+        }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarLeading) {
+                Button {
+                    onBackButtonTapped()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                        Text("Back")
+                    }
+                }
+                // TODO: ideally, according to UX guidelines, we must grant user the possibility to cancel long-running operations.
+                .disabled(!viewModel.isBackButtonEnabled)
+            }
         }
         
         // TODO: disable manual scrolling, use only progammatic buttons "Next" that become enabled once user is done on current page
+    }
+    
+    private func onBackButtonTapped() {
+        switch viewModel.currentTab {
+        case .pickRoomPhoto:
+            presentationMode.wrappedValue.dismiss()
+        case _:
+            viewModel.returnToPreviousStage()
+        }
     }
 }
 

@@ -11,6 +11,7 @@ import Vision
 
 extension PreviewGenerationScreen {
     enum PreviewGenerationStatus {
+        case idle
         case segmentation
         case layout
         case textureSynthesis
@@ -21,8 +22,16 @@ extension PreviewGenerationScreen {
     
     @MainActor
     class ViewModel: ObservableObject {
+        
         @Published
-        var previewGenerationStatus: PreviewGenerationStatus = .segmentation
+        var previewGenerationStatus: PreviewGenerationStatus {
+            didSet {
+                updateBackButtonStatus()
+            }
+        }
+        
+        @Published
+        var isBackButtonEnabled: Bool = true
         
         // TODO: switch to state pattern instead, where each step is characterized by an enum
         @Published
@@ -52,6 +61,10 @@ extension PreviewGenerationScreen {
         private let fileHelper = FileHelper.shared
         private let wallpaperSynthesisHelper = WallpaperSynthesisHelper()
         
+        init() {
+            previewGenerationStatus = .idle
+        }
+        
         private func updateCurrentTabIfNeeded() {
             if roomPhoto == nil {
                 currentTab = .pickRoomPhoto
@@ -60,6 +73,29 @@ extension PreviewGenerationScreen {
             } else {
                 currentTab = .preparePreview
             }
+        }
+        
+        private func updateBackButtonStatus() {
+            switch previewGenerationStatus {
+            case .idle, .error(_), .done(_):
+                isBackButtonEnabled = true
+            case _:
+                isBackButtonEnabled = false
+            }
+        }
+        
+        func returnToPreviousStage() {
+            switch currentTab {
+            case .pickRoomPhoto:
+                // Do nothing
+                break
+            case .pickWallpaperPhoto:
+                roomPhoto = nil
+                wallpaperPhoto = nil
+            case .preparePreview:
+                wallpaperPhoto = nil
+            }
+            updateCurrentTabIfNeeded()
         }
         
         func generatePreview() async {
@@ -88,8 +124,10 @@ extension PreviewGenerationScreen {
                 previewGenerationStatus = .error(error.message)
                 return
             }
+            print("Prepared segmentation image size: \(segmentationImage.size)")
             
             // MARK: - Layout extraction
+
             previewGenerationStatus = .layout
             
             let roomLayout: RoomLayout
@@ -104,34 +142,106 @@ extension PreviewGenerationScreen {
             }
            
             // MARK: - Texture synthesis
+
             previewGenerationStatus = .textureSynthesis
             
-            let wallpaperPhotoImage: UIImage
-            switch fileHelper.loadWallpaperPhoto(id: wallpaperPhotoFile.id) {
-            case .success(let image):
-                wallpaperPhotoImage = image
+            let wallpaperTile: UIImage
+            switch await prepareWallpaperTile(wallpaperPhotoFile: wallpaperPhotoFile) {
+            case .success(let tile):
+                wallpaperTile = tile
             case .failure(let error):
-                print("Could not load wallpaper photo: \(error)")
-                // TODO: error handling
+                print("Could not prepare wallpaper tile: \(error)")
+                previewGenerationStatus = .error("Could not prepare wallpaper tile: \(error)")
+                return
+            }
+               
+            // MARK: - Assemble preview
+
+            previewGenerationStatus = .assemble
+            
+            // TODO: avoid reading room and wallpaper photos multiple times, load it only once and pass it in prepare methods
+            let roomPhoto: UIImage
+            switch fileHelper.loadRoomPhoto(id: roomPhotoFile.id) {
+            case .success(let image):
+                roomPhoto = image
+            case .failure(let error):
+                print("Could not load room photo: \(error)")
+                previewGenerationStatus = .error("Could not load room photo: \(error)")
                 return
             }
             
-            // TODO: returned data must be released from Rust!
-            let synthesisResult = await wallpaperSynthesisHelper.synthesizeWallpaperTile(fromPhoto: wallpaperPhotoImage)
+            await prepareWallpaperPreview(
+                roomPhoto: roomPhoto,
+                roomWallMask: segmentationImage,
+                roomLayout: roomLayout,
+                wallpaperTile: wallpaperTile
+            )
             
-            // TODO: preprocess image before synthesizing: normalize lightning, flares, etc. Potentially, add this as TODO in Dissertation
+            // MARK: Done
+            // TODO: implement
+            previewGenerationStatus = .done(MediaFile(id: "1", filePath: "1.jpg"))
+        }
+        
+        private func prepareWallpaperPreview(
+            roomPhoto: UIImage,
+            roomWallMask: UIImage,
+            roomLayout: RoomLayout,
+            wallpaperTile: UIImage
+        ) async {
+            print("Preparing wallpaper preview")
             
-            switch synthesisResult {
-            case .success(let synthesizedImage):
-                // FIXME: for debug
-                self.segmentationImage = synthesizedImage
-            case .failure(let error):
-                print("Could not synthesize wallpaper tile image: \(error)")
-                break
+            printImageInfo(image: roomPhoto, title: "roomPhoto")
+            printImageInfo(image: roomWallMask, title: "roomWallMask")
+            printImageInfo(image: wallpaperTile, title: "wallpaperTile")
+            
+            // TODO: assemble preview
+        }
+        
+        private func printImageInfo(image: UIImage, title: String) {
+            print("\n\(title)")
+            let cgImage = image.cgImage!
+            print("Size: \(image.size)")
+            print("CG Size: \(cgImage.width)x\(cgImage.height)")
+            print("Color space: \(cgImage.colorSpace!.name!), components: \(cgImage.colorSpace!.numberOfComponents)")
+            print("Bits per component: \(cgImage.bitsPerComponent)")
+            print("Alpha info: \(cgImage.alphaInfo)")
+        }
+        
+        private func prepareWallpaperTile(wallpaperPhotoFile: MediaFile) async -> Result<UIImage, PreviewError> {
+            let cachedWallpaperTile = fileHelper.loadWallpaperTile(id: wallpaperPhotoFile.id)
+            if case .success(let wallpaperTile) = cachedWallpaperTile, wallpaperTile != nil {
+                print("Loaded cached wallpaper tile")
+                return .success(wallpaperTile!)
             }
             
+            print("Could not load cached wallpaper tile, will perform texture synthesis")
             
+            let wallpaperPhoto: UIImage
+            switch fileHelper.loadWallpaperPhoto(id: wallpaperPhotoFile.id) {
+            case .success(let image):
+                wallpaperPhoto = image
+            case .failure(let error):
+                return .failure(PreviewError(message: "Could not load wallpaper photo: \(error)"))
+            }
             
+            let synthesisResult = await wallpaperSynthesisHelper.synthesizeWallpaperTile(fromPhoto: wallpaperPhoto)
+            let wallpaperTile: UIImage
+            switch synthesisResult {
+            case .success(let image):
+                wallpaperTile = image
+            case .failure(let error):
+                return .failure(PreviewError(message: "Texture synthesis failed: \(error)"))
+            }
+            
+            // Cache synthesized wallpaper tile
+            switch fileHelper.saveWallpaperTile(image: wallpaperTile, id: wallpaperPhotoFile.id) {
+            case .success(let wallpaperTileFile):
+                print("Successfully saved wallpaper tile to: \(wallpaperTileFile.filePath)")
+            case .failure(let error):
+                return .failure(PreviewError(message: "Could not save wallpaper tile: \(error)"))
+            }
+            
+            return .success(wallpaperTile)
         }
         
         private func prepareRoomLayout(roomPhotoFile: MediaFile) async -> Result<RoomLayout, PreviewError> {
@@ -170,6 +280,7 @@ extension PreviewGenerationScreen {
             }
             
             // MARK: Parsing layout results
+
             let edges = layoutObservations[0]
             guard edges.featureName == "edges" else {
                 fatalError("Unexpected edge features name: \"\(edges.featureName)\"")
@@ -303,7 +414,10 @@ extension PreviewGenerationScreen {
             
             let threshold: Float = 0.5
             
-            let renderer = UIGraphicsImageRenderer(size: CGSize(width: segmentationMapWidth, height: segmentationMapHeight))
+            var format = UIGraphicsImageRendererFormat()
+            format.scale = 1.0
+            format.opaque = true
+            let renderer = UIGraphicsImageRenderer(size: CGSize(width: segmentationMapWidth, height: segmentationMapHeight), format: format)
             
             let image = renderer.image { context in
                 for row in 0 ..< segmentationMapWidth {
@@ -331,6 +445,7 @@ extension PreviewGenerationScreen {
                     }
                 }
             }
+            print("Segmentation image size: \(image.size)")
             
             return image
         }

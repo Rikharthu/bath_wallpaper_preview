@@ -43,6 +43,9 @@ struct Cli {
     /// Cauchy dispersion
     #[arg(long, value_parser = tiling_mask_ratio_in_range)]
     cauchy_dispersion: f32,
+    /// Square size of the input image to be resized before texture synthesis
+    #[arg(long)]
+    input_resize: u32,
 }
 
 const TILING_MASK_RATIO_RANGE: RangeInclusive<f32> = 0.0..=1.0;
@@ -119,6 +122,7 @@ struct Parameters {
     cauchy_dispersion: f32,
     tile_width: u32,
     tile_height: u32,
+    input_resize: u32
 }
 
 // TODO: also output tile and assembled tile images with translucent mask overlay to see which areas were generated
@@ -131,20 +135,20 @@ fn main() {
         .expect("Could not decode image");
     let source = ts::ImageSource::Image(image_example.clone());
     let example = ts::Example::new(source);
-
-    let mask = generate_mask_image(Dims::square(100), cli.tiling_mask_ratio);
+    
+    let input_resize_dims = Dims::new(cli.input_resize, cli.input_resize);
+    
+    let mask = generate_mask_image(input_resize_dims, cli.tiling_mask_ratio);
     let mask = ts::ImageSource::Image(DynamicImage::from(mask));
 
     let cpu_count = num_cpus::get();
 
     // TODO: make it configurable from CLI
-    let size = Dims::new(image_example.width(), image_example.height());
-
     let session = ts::Session::builder()
         .backtrack_stages(cli.backtrack_stages)
         .max_thread_count(cpu_count)
         .tiling_mode(true)
-        .inpaint_example(mask, example, size)
+        .inpaint_example(mask, example, input_resize_dims)
         .cauchy_dispersion(cli.cauchy_dispersion)
         .nearest_neighbors(cli.nearest_neighbors)
         .random_sample_locations(cli.random_samples)
@@ -165,8 +169,9 @@ fn main() {
         nearest_neighbors: cli.nearest_neighbors,
         random_samples: cli.random_samples,
         cauchy_dispersion: cli.cauchy_dispersion,
-        tile_width: size.width,
-        tile_height: size.height,
+        tile_width: input_resize_dims.width,
+        tile_height: input_resize_dims.height,
+        input_resize: cli.input_resize
     };
     let report = Report {
         elapsed_millis: elapsed.as_millis(),

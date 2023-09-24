@@ -78,9 +78,7 @@ typedef struct RoomLayoutEstimationResults {
 
 void release_image_buffer(const uint8_t *buffer_ptr, uintptr_t length);
 
-const uint8_t *synthesize_texture(const struct RgbaImageInfo *sample_info,
-                                  uint32_t input_resize,
-                                  uint32_t output_size);
+const uint8_t *synthesize_texture(const struct RgbaImageInfo *sample_info, uint32_t input_resize);
 
 const uint8_t *rust_process_data(const struct RgbaImageInfo *image_info);
 

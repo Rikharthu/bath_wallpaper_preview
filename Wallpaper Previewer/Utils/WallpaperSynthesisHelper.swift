@@ -10,8 +10,7 @@ import UIKit
 
 final class WallpaperSynthesisHelper {
     
-    private static let inputResize: Int = 1024
-    private static let outputSize: Int = 1024
+    private static let synthesisSize: Int = 320
     
     // TODO: to handle progress report, can we make it AsyncSequence that returns either current loading status or synthesized image (finished) (using enum)
     func synthesizeWallpaperTile(fromPhoto wallpaperPhoto: UIImage) async -> Result<UIImage, SynthesisError> {
@@ -24,7 +23,7 @@ final class WallpaperSynthesisHelper {
         // TODO: preprocessing?
         let inputSize = wallpaperPhoto.size
         
-        let synthesizedRgbDataCount = Int(Self.outputSize) * Int(Self.outputSize) * 4 // Hardocded in Rust code for now
+        let synthesizedRgbDataCount = Self.synthesisSize * Self.synthesisSize * 4 // Hardocded in Rust code for now
         var synthesizedRgbData: UnsafePointer<UInt8>? = rgbData.withUnsafeBufferPointer { rgbDataPtr in
             let imageInfo = RgbaImageInfo(
                 data: rgbDataPtr.baseAddress!,
@@ -39,8 +38,7 @@ final class WallpaperSynthesisHelper {
                 // TODO: error handling if nil
                 synthesize_texture(
                     imageInfoPtr,
-                    UInt32(Self.inputResize),
-                    UInt32(Self.outputSize)
+                    UInt32(Self.synthesisSize)
                 )!
             }
         }
@@ -66,11 +64,11 @@ final class WallpaperSynthesisHelper {
                 // TODO: use generated wallpaper tile size
 //                width: Int(wallpaperPhoto.size.width),
 //                height: Int(wallpaperPhoto.size.height),
-                width: Int(Self.outputSize),
-                height: Int(Self.outputSize),
+                width: Self.synthesisSize,
+                height: Self.synthesisSize,
                 bitsPerComponent: 8,
 //                bytesPerRow: 4 * Int(wallpaperPhoto.size.width),
-                bytesPerRow: 4 * Int(Self.outputSize),
+                bytesPerRow: 4 * Self.synthesisSize,
                 space: CGColorSpace(name: CGColorSpace.sRGB)!,
                 bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
             )!
