@@ -1451,7 +1451,7 @@ fn compute_wall_polygons_for_room_type_10(lines: &Vec<Line>, image_height: i32) 
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use crate::polygons::{
         compute_line_intercept_at_point, compute_line_params, compute_line_y_at_x,
         compute_lines_intersection_point, compute_wall_polygon_for_room_type_6,
@@ -1470,7 +1470,11 @@ mod tests {
     use ndarray::{Array1, Array2, Axis};
     use ndarray_stats::QuantileExt;
     use serde::{Deserialize, Serialize};
-    use std::{fs::File, io::{BufReader, BufWriter}, path::PathBuf};
+    use std::{
+        fs::File,
+        io::{BufReader, BufWriter},
+        path::PathBuf,
+    };
 
     #[derive(Debug, Clone, Serialize, Deserialize)]
     struct LinesData {
@@ -1483,7 +1487,7 @@ mod tests {
         pub room_type: u8,
         pub edges: Vec<LineData>,
         #[serde(rename = "wallPolygons")]
-        pub wall_polygons: Vec<PolygonData>
+        pub wall_polygons: Vec<PolygonData>,
     }
 
     #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1507,7 +1511,7 @@ mod tests {
         #[serde(rename = "bottomRight")]
         pub bottom_right: PointData,
         #[serde(rename = "bottomLeft")]
-        pub bottom_left: PointData
+        pub bottom_left: PointData,
     }
 
     #[test]
@@ -1559,18 +1563,33 @@ mod tests {
                 })
                 .collect();
 
-            let wall_polygons: Vec<PolygonData> = polygons.iter().map(|polygon| {
-                let top_left = PointData{ x: polygon.top_left.0, y: polygon.top_left.1 };
-                let top_right = PointData{ x: polygon.top_right.0, y: polygon.top_right.1 };
-                let bottom_right = PointData{ x: polygon.bottom_right.0, y: polygon.bottom_right.1 };
-                let bottom_left = PointData{ x: polygon.bottom_left.0, y: polygon.bottom_left.1 };
-                PolygonData { 
-                    top_left, 
-                    top_right, 
-                    bottom_right, 
-                    bottom_left 
-                }
-            }).collect();
+            let wall_polygons: Vec<PolygonData> = polygons
+                .iter()
+                .map(|polygon| {
+                    let top_left = PointData {
+                        x: polygon.top_left.0,
+                        y: polygon.top_left.1,
+                    };
+                    let top_right = PointData {
+                        x: polygon.top_right.0,
+                        y: polygon.top_right.1,
+                    };
+                    let bottom_right = PointData {
+                        x: polygon.bottom_right.0,
+                        y: polygon.bottom_right.1,
+                    };
+                    let bottom_left = PointData {
+                        x: polygon.bottom_left.0,
+                        y: polygon.bottom_left.1,
+                    };
+                    PolygonData {
+                        top_left,
+                        top_right,
+                        bottom_right,
+                        bottom_left,
+                    }
+                })
+                .collect();
 
             let room_layout = RoomLayoutData {
                 room_type,
@@ -1583,7 +1602,6 @@ mod tests {
             let room_layout_file = File::create(room_layout_file_path).unwrap();
             let mut writer = BufWriter::new(room_layout_file);
             serde_json::to_writer(writer, &room_layout).unwrap();
-            
 
             // let images_dir = PathBuf::from(
             //     "/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img",
@@ -1900,7 +1918,7 @@ mod tests {
         overlay_image.save(output_image_path).unwrap();
     }
 
-    fn draw_lines_on_padded_image(
+    pub(crate) fn draw_lines_on_padded_image(
         src_image: &RgbImage,
         lines: &Vec<Line>,
         padding: u32,

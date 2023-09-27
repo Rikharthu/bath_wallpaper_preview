@@ -173,6 +173,10 @@ class FileHelper {
         return .success(image)
     }
     
+    func getRoomMasksPhotos() -> Result<[MediaFile], Error> {
+        return getMediaFiles(fromDirectory: roomMasksDirectory)
+    }
+    
     func saveRoomMask(image: UIImage, id: String) -> Result<MediaFile, Error> {
         return saveImageToDirectory(image: image, id: id, directoryUrl: roomMasksDirectory)
     }

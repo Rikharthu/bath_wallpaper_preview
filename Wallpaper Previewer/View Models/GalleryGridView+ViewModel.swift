@@ -30,15 +30,15 @@ extension GalleryGridView {
         }
         
         // TODO: could be async since it uses IO
-        func loadMediaFiles() {
+        func loadMediaFiles() async {
             print("Loading media files")
             switch galleryType {
             case .previews:
                 print("TODO: Load previews")
             case .rooms:
-                loadRoomPhotos()
+                await loadRoomPhotos()
             case .wallpapers:
-                loadWallpaperPhotos()
+                await loadWallpaperPhotos()
             }
         }
         
@@ -58,13 +58,13 @@ extension GalleryGridView {
             
         }
         
-        func onNewPhotoPicked(_ photoImage: UIImage) {
+        func onNewPhotoPicked(_ photoImage: UIImage) async {
             print("New photo has been captured")
             switch galleryType {
             case .rooms:
-                savePickedRoomPhoto(photoImage)
+                await savePickedRoomPhoto(photoImage)
             case .wallpapers:
-                savePickedWallpaperPhoto(photoImage)
+                await savePickedWallpaperPhoto(photoImage)
             case .previews:
                 // TODO
                 break
@@ -76,45 +76,45 @@ extension GalleryGridView {
             showPhotosLibrarySheet = true
         }
         
-        func deletePhoto(id: String) {
+        func deletePhoto(id: String) async {
             switch galleryType {
             case .rooms:
-                deleteRoomPhoto(id: id)
+                await deleteRoomPhoto(id: id)
             case .wallpapers:
-                deleteWallpaperPhoto(id: id)
+                await deleteWallpaperPhoto(id: id)
             case .previews:
                 // TODO
                 break
             }
         }
         
-        private func deleteRoomPhoto(id: String) {
+        private func deleteRoomPhoto(id: String) async {
             print("Deleting room photo with id \(id)")
             
             switch fileHelper.deleteRoomPhoto(id: id) {
             case .success(_):
                 print("Successfully deleted room photo")
-                loadMediaFiles()
+                await loadMediaFiles()
             case .failure(let error):
                 print("Could not delete room photo: \(error)")
                 // TODO: proper error handling
             }
         }
         
-        private func deleteWallpaperPhoto(id: String) {
+        private func deleteWallpaperPhoto(id: String) async {
             print("Deleting wallpaper photo with id \(id)")
             
             switch fileHelper.deleteWallpaperPhoto(id: id) {
             case .success(_):
                 print("Successfully deleted wallpaper photo")
-                loadMediaFiles()
+                await loadMediaFiles()
             case .failure(let error):
                 print("Could not delete wallpaper photo: \(error)")
                 // TODO: proper error handling
             }
         }
         
-        private func loadRoomPhotos() {
+        private func loadRoomPhotos() async {
             switch fileHelper.getRoomPhotos() {
             case .success(let roomPhotos):
                 mediaFiles = roomPhotos
@@ -124,7 +124,7 @@ extension GalleryGridView {
             }
         }
         
-        private func loadWallpaperPhotos() {
+        private func loadWallpaperPhotos() async {
             switch fileHelper.getWallpaperPhotos() {
             case .success(let wallpaperPhotos):
                 mediaFiles = wallpaperPhotos
@@ -134,28 +134,28 @@ extension GalleryGridView {
             }
         }
         
-        private func savePickedRoomPhoto(_ image: UIImage) {
+        private func savePickedRoomPhoto(_ image: UIImage) async {
             // TODO: we won't run inference at this point. Instead we will do it during preview generation, if it is not already cached in corresponding directory
             
             // TODO: probably, its better to be done on some background thread since it involves IO?
             switch fileHelper.saveRoomPhoto(image: image) {
             case .success(_):
                 print("Successfully saved picked room photo to app gallery")
-                loadMediaFiles()
+                await loadMediaFiles()
             case .failure(let error):
                 print("Could not save picked room photo to app gallery: \(error)")
                 // TODO: error handling
             }
         }
         
-        private func savePickedWallpaperPhoto(_ image: UIImage) {
+        private func savePickedWallpaperPhoto(_ image: UIImage) async {
             // TODO: we won't run inference at this point. Instead we will do it during preview generation, if it is not already cached in corresponding directory
             
             // TODO: probably, its better to be done on some background thread since it involves IO?
             switch fileHelper.saveWallpaperPhoto(image: image) {
             case .success(_):
                 print("Successfully saved picked wallpaper photo to app gallery")
-                loadMediaFiles()
+                await loadMediaFiles()
             case .failure(let error):
                 print("Could not save picked wallpaper photo to app gallery: \(error)")
                 // TODO: error handling

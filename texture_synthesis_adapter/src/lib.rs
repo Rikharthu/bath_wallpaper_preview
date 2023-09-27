@@ -1,6 +1,7 @@
-mod polygons;
+pub mod polygons;
+pub mod preview;
 
-use image::{DynamicImage, Rgba, RgbaImage, RgbImage};
+use image::{DynamicImage, RgbImage, Rgba, RgbaImage};
 use imageproc::drawing::draw_filled_rect_mut;
 use imageproc::rect::Rect;
 use lsun_res_parser::parse_lsun_results;
@@ -53,21 +54,21 @@ pub struct RoomLayoutData {
 }
 
 #[repr(C)]
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct LayoutPoint {
     pub x: i32,
     pub y: i32,
 }
 
 #[repr(C)]
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct LayoutLine {
     pub start: LayoutPoint,
     pub end: LayoutPoint,
 }
 
 #[repr(C)]
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct WallPolygon {
     pub top_left: LayoutPoint,
     pub top_right: LayoutPoint,
@@ -116,7 +117,7 @@ pub struct RoomLayoutEstimationResults {
 
 #[no_mangle]
 pub extern "C" fn release_image_buffer(buffer_ptr: *const u8, length: usize) {
-    unsafe { 
+    unsafe {
         let slice_ptr = std::ptr::slice_from_raw_parts(buffer_ptr, length) as *mut u8;
         let _ = Box::from_raw(slice_ptr);
     }
@@ -128,7 +129,7 @@ pub extern "C" fn release_image_buffer(buffer_ptr: *const u8, length: usize) {
 #[no_mangle]
 pub extern "C" fn synthesize_texture(
     sample_info: *const RgbaImageInfo,
-    input_resize: u32
+    input_resize: u32,
 ) -> *const u8 {
     let sample_info = unsafe { ptr::read(sample_info) };
 
@@ -150,14 +151,11 @@ pub extern "C" fn synthesize_texture(
     // By default texture synthesis uses all CPUs, but we still specify it explicitly
     let cpu_count = num_cpus::get();
     println!("Number of CPUs available: {}", cpu_count);
-    
+
     let input_resize_dims = Dims::square(input_resize);
 
     // Prepare inpaint mask so that only border pixels will be synthesized
-    let mask = generate_mask_image(
-        input_resize_dims, 
-        0.16
-    );
+    let mask = generate_mask_image(input_resize_dims, 0.16);
     let mask = ts::ImageSource::Image(DynamicImage::from(mask));
 
     let textsynth = ts::Session::builder()
@@ -185,7 +183,7 @@ pub extern "C" fn synthesize_texture(
     let buffer_len = buffer_slice.len();
     println!("Buffer length: {buffer_len}");
     let buffer_ptr = Box::into_raw(buffer_slice) as *const u8;
-    return buffer_ptr
+    return buffer_ptr;
 }
 
 fn generate_mask_image(size: Dims, ratio: f32) -> RgbImage {

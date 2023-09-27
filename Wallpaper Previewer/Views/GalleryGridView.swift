@@ -55,7 +55,9 @@ struct GalleryGridView: View {
                         }
                         .contextMenu {
                             Button {
-                                viewModel.deletePhoto(id: mediaFile.id)
+                                Task {
+                                    await viewModel.deletePhoto(id: mediaFile.id)
+                                }
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -79,7 +81,9 @@ struct GalleryGridView: View {
             let capturedPhotoBinding: Binding<UIImage> = Binding {
                 UIImage()
             } set: { capturedPhoto, _ in
-                viewModel.onNewPhotoPicked(capturedPhoto)
+                Task {
+                    await viewModel.onNewPhotoPicked(capturedPhoto)
+                }
             }
             ImagePicker(sourceType: .photoLibrary, selectedImage: capturedPhotoBinding)
         }
@@ -90,12 +94,14 @@ struct GalleryGridView: View {
             let capturedPhotoBinding: Binding<UIImage> = Binding {
                 UIImage()
             } set: { capturedPhoto, _ in
-                viewModel.onNewPhotoPicked(capturedPhoto)
+                Task {
+                    await viewModel.onNewPhotoPicked(capturedPhoto)
+                }
             }
             ImagePicker(sourceType: .camera, selectedImage: capturedPhotoBinding)
         }
-        .onAppear {
-            viewModel.loadMediaFiles()
+        .task {
+            await viewModel.loadMediaFiles()
         }
     }
 }
