@@ -16,6 +16,7 @@ ndarray = "0.15.6"
 ndarray-stats = "0.5.1"
 lsun_res_parser = { git = "https://github.com/Rikharthu/bath_rust_lsun_res_parser" }
 imageproc = "0.23.0"
+rgb_hsv = "1.0.1"
 
 [dev-dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
