@@ -76,7 +76,7 @@ mod tests {
             num_wall_polygons: 2,
         };
 
-        let polygons: Vec<Polygon> = (0..room_layout_data.num_wall_polygons)
+        let mut polygons: Vec<Polygon> = (0..room_layout_data.num_wall_polygons)
             .map(|i| {
                 let wall_polygon = room_layout_data.wall_polygons[i as usize];
                 wall_polygon.into()
@@ -94,9 +94,41 @@ mod tests {
         let images_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
         let image_path = images_dir.join(format!("{sample_idx}.png"));
         println!("Reading image: {image_path:?}");
-        let room_image = image::open(image_path).unwrap().into_rgb8();
-        let room_image_width = room_image.width();
-        let room_image_height = room_image.height();
+        let mut room_image = image::open(image_path).unwrap().into_rgb8();
+
+        let min_room_image_side = 1024; // 2056
+        let mut room_image_width = room_image.width();
+        let mut room_image_height = room_image.height();
+        let smallest_room_image_side = u32::min(room_image_width, room_image_height);
+        if smallest_room_image_side < min_room_image_side {
+            let scale_ratio = min_room_image_side as f32 / smallest_room_image_side as f32;
+            room_image_width = (room_image_width as f32 * scale_ratio) as u32;
+            room_image_height = (room_image_height as f32 * scale_ratio) as u32;
+            room_image = image::imageops::resize(
+                &room_image,
+                room_image_width,
+                room_image_height,
+                FilterType::Lanczos3,
+            );
+        }
+
+        let polygon_width_scale = room_image_width as f32 / 512.0;
+        let polygon_height_scale = room_image_height as f32 / 512.0;
+
+        // Rescale polygons to apply to room image size
+        for polygon in polygons.iter_mut() {
+            polygon.top_left.0 = (polygon.top_left.0 as f32 * polygon_width_scale) as i32;
+            polygon.top_left.1 = (polygon.top_left.1 as f32 * polygon_height_scale) as i32;
+
+            polygon.top_right.0 = (polygon.top_right.0 as f32 * polygon_width_scale) as i32;
+            polygon.top_right.1 = (polygon.top_right.1 as f32 * polygon_height_scale) as i32;
+
+            polygon.bottom_right.0 = (polygon.bottom_right.0 as f32 * polygon_width_scale) as i32;
+            polygon.bottom_right.1 = (polygon.bottom_right.1 as f32 * polygon_height_scale) as i32;
+
+            polygon.bottom_left.0 = (polygon.bottom_left.0 as f32 * polygon_width_scale) as i32;
+            polygon.bottom_left.1 = (polygon.bottom_left.1 as f32 * polygon_height_scale) as i32;
+        }
 
         let overlay_image = draw_lines_on_padded_image(&room_image, &lines, 200);
 
@@ -123,10 +155,25 @@ mod tests {
 
         let tile_image_path = PathBuf::from("./fixtures/wallpaper1.jpg");
         let tile_image = image::open(tile_image_path).unwrap();
-        let tile_image = tile_image.into_rgba8();
+        // let tile_image = tile_image.into_rgba8();
+
+        // TODO: rename into assembled_tiles_image
+        let num_tiles_per_wall = 5;
+        let tile_image = assemble_tiles_image(
+            &tile_image.into_rgb8(),
+            room_image_width * 2,
+            room_image_height,
+            // TODO: parameterize
+            num_tiles_per_wall * 2,
+        );
+        tile_image.save(format!("./out/assembled_tile.jpg")).unwrap();
+        let tile_image = DynamicImage::from(tile_image).into_rgba8();
+
+
         let tile_width = tile_image.width();
         let tile_height = tile_image.height();
         println!("Tile size: {tile_width}x{tile_height}");
+
 
         let mut preview_image = room_image.clone();
         let wall_pixel = Luma([255]);
@@ -136,6 +183,8 @@ mod tests {
             RgbaImage::from_pixel(room_image.width(), room_image.height(), warp_default_pixel);
         let mut warped_combined_wall_tiles_image = warped_individual_wall_tiles_image.clone();
         for (i, polygon) in polygons.iter().enumerate() {
+            // TODO: compute which part of the assembled tiles image we shall copy for each wall.
+            //   Also ensure that connected walls from_points continue so that there are no interuptions
             let from_points = [
                 (0f32, 0f32),
                 (tile_width as f32, 0f32),
@@ -212,7 +261,7 @@ mod tests {
             let average_wall_blackness_pixel_value = (average_wall_blackness * 255.0) as i32;
             println!("Average wall {i} blackness: {average_wall_blackness}, pixel: {average_wall_blackness_pixel_value}");
             for (x, y, warped_wall_tile_pixel) in
-                warped_individual_wall_tiles_image.enumerate_pixels_mut()
+            warped_individual_wall_tiles_image.enumerate_pixels_mut()
             {
                 let is_wall = *current_wall_mask.get_pixel(x, y) == wall_pixel;
                 if !is_wall {
@@ -309,6 +358,32 @@ mod tests {
         let (x1, y1) = from;
         let (x2, y2) = to;
         f32::sqrt(((x2 - x1).pow(2) + (y2 - y1).pow(2)) as f32) as i32
+    }
+
+    fn assemble_tiles_image(
+        tile_image: &RgbImage,
+        dst_image_width: u32,
+        dst_image_height: u32,
+        num_horizontal_tiles: usize,
+    ) -> RgbImage {
+        let tile_aspect_ratio = tile_image.width() as f32 / tile_image.height() as f32;
+        let tile_width = dst_image_width / num_horizontal_tiles as u32;
+        let tile_height = (tile_width as f32 / tile_aspect_ratio) as u32;
+        let tile_image = image::imageops::resize(
+            tile_image,
+            tile_width,
+            tile_height,
+            FilterType::Lanczos3,
+        );
+
+        let mut dst_assembled_tiles_image = RgbImage::new(dst_image_width, dst_image_height);
+        for (dst_x, dst_y, dst_pixel) in dst_assembled_tiles_image.enumerate_pixels_mut() {
+            let src_tile_x = dst_x % tile_width;
+            let src_tile_y = dst_y % tile_height;
+            *dst_pixel = *tile_image.get_pixel(src_tile_x, src_tile_y);
+        }
+
+        dst_assembled_tiles_image
     }
 
     #[test]
