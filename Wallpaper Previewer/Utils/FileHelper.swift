@@ -181,6 +181,19 @@ class FileHelper {
         return saveImageToDirectory(image: image, directoryUrl: previewsDirectory)
     }
     
+    func deletePreviewImage(id: String) -> Result<Void, Error> {
+        switch deleteImageFromDirectoryIfExists(imageId: id, directoryUrl: previewsDirectory) {
+        case .success(true):
+            print("Successfully deleted preview image: \(id)")
+            return .success(())
+        case .success(false):
+            print("Preview image with id \(id) does not exist")
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
     func getRoomMasksPhotos() -> Result<[MediaFile], Error> {
         return getMediaFiles(fromDirectory: roomMasksDirectory)
     }

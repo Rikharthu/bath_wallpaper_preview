@@ -34,7 +34,7 @@ extension GalleryGridView {
             print("Loading media files")
             switch galleryType {
             case .previews:
-                print("TODO: Load previews")
+                await loadPreviewImages()
             case .rooms:
                 await loadRoomPhotos()
             case .wallpapers:
@@ -52,10 +52,7 @@ extension GalleryGridView {
         func takePhoto() {
             print("Will take new photo")
             // TODO: wallpaper photos must be square
-            
             showCameraSheet = true
-            
-            
         }
         
         func onNewPhotoPicked(_ photoImage: UIImage) async {
@@ -66,7 +63,7 @@ extension GalleryGridView {
             case .wallpapers:
                 await savePickedWallpaperPhoto(photoImage)
             case .previews:
-                // TODO
+                fatalError("Added new preview photos is not supported")
                 break
             }
         }
@@ -83,8 +80,7 @@ extension GalleryGridView {
             case .wallpapers:
                 await deleteWallpaperPhoto(id: id)
             case .previews:
-                // TODO
-                break
+                await deletePreviewImage(id: id)
             }
         }
         
@@ -114,6 +110,19 @@ extension GalleryGridView {
             }
         }
         
+        private func deletePreviewImage(id: String) async {
+            print("Deleting preview image with id \(id)")
+            
+            switch fileHelper.deletePreviewImage(id: id) {
+            case .success(_):
+                print("Successfully deleted wallpaper photo")
+                await loadMediaFiles()
+            case .failure(let error):
+                print("Could not delete wallpaper photo: \(error)")
+                // TODO: proper error handling
+            }
+        }
+        
         private func loadRoomPhotos() async {
             switch fileHelper.getRoomPhotos() {
             case .success(let roomPhotos):
@@ -130,6 +139,16 @@ extension GalleryGridView {
                 mediaFiles = wallpaperPhotos
             case .failure(let error):
                 print("Error loading room photos: \(error)")
+                // TODO: display error to UI
+            }
+        }
+        
+        private func loadPreviewImages() async {
+            switch fileHelper.getPreviewImages() {
+            case .success(let previewImages):
+                mediaFiles = previewImages
+            case .failure(let error):
+                print("Error loading previews images: \(error)")
                 // TODO: display error to UI
             }
         }
