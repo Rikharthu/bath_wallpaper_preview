@@ -2,6 +2,9 @@ use std::path::PathBuf;
 
 #[cfg(test)]
 mod tests {
+    use geo::geometry::LineString;
+    use geo::geometry::Polygon as GeoPolygon;
+    use geo::{Contains, Coord};
     use image::imageops::{overlay, FilterType};
     use image::{DynamicImage, GrayImage, Luma, Pixel, Rgb, RgbImage, Rgba, RgbaImage};
     use imageproc::definitions::HasBlack;
@@ -9,16 +12,28 @@ mod tests {
     use imageproc::geometric_transformations::{
         warp, warp_into, warp_into_with, Interpolation, Projection,
     };
+    use lazy_static::lazy_static;
     use lsun_res_parser::Point;
     use ndarray::Array2;
+    use once_cell::unsync::Lazy;
     use rgb_hsv::{hsv_to_rgb, rgb_to_hsv};
     use serde::Deserialize;
+    use std::cell::OnceCell;
     use std::{fs::File, io::BufReader, path::PathBuf};
 
     use crate::{
-        polygons::{tests::draw_lines_on_padded_image, Polygon},
-        LayoutLine, LayoutPoint, RoomLayoutData, WallPolygon,
+        polygons::{tests::draw_lines_on_padded_image, WallPolygon},
+        LayoutLine, LayoutPoint, LayoutWallPolygon, RoomLayoutData,
     };
+
+    const WALL_WIDTH_METERS: f32 = 3.6;
+    const WALL_HEIGHT_METERS: f32 = 2.4;
+    const WALLPAPER_TILE_WIDTH_METERS: f32 = 0.53;
+    const WALLPAPER_TILE_HEIGHT_METERS: f32 = 0.53;
+    const VISIBLE_WALLS: f32 = 1.2;
+    static VISIBLE_WIDTH_METERS: f32 = WALL_WIDTH_METERS * VISIBLE_WALLS;
+    static VISIBLE_HORIZONTAL_TILE_COUNT: f32 = VISIBLE_WIDTH_METERS / WALLPAPER_TILE_WIDTH_METERS;
+    static VISIBLE_VERTICAL_TILES_COUNT: f32 = WALL_HEIGHT_METERS / WALLPAPER_TILE_HEIGHT_METERS;
 
     #[test]
     fn preview_generation_works() {
@@ -59,13 +74,13 @@ mod tests {
             num_lines: 5,
             room_type: 5,
             wall_polygons: [
-                WallPolygon {
+                LayoutWallPolygon {
                     top_left: LayoutPoint { x: -5, y: -13 },
                     top_right: LayoutPoint { x: 300, y: 165 },
                     bottom_right: LayoutPoint { x: 302, y: 344 },
                     bottom_left: LayoutPoint { x: 0, y: 500 },
                 },
-                WallPolygon {
+                LayoutWallPolygon {
                     top_left: LayoutPoint { x: 300, y: 165 },
                     top_right: LayoutPoint { x: 511, y: 85 },
                     bottom_right: LayoutPoint { x: 515, y: 386 },
@@ -76,27 +91,81 @@ mod tests {
             num_wall_polygons: 2,
         };
 
-        let mut polygons: Vec<Polygon> = (0..room_layout_data.num_wall_polygons)
+        let mut polygons: Vec<WallPolygon> = (0..room_layout_data.num_wall_polygons)
             .map(|i| {
                 let wall_polygon = room_layout_data.wall_polygons[i as usize];
                 wall_polygon.into()
             })
             .collect();
+        // Count width shares using top line since we start applying wallpaper tiles from [0; 0]
+        let polygon_wall_widths: Vec<f32> = polygons
+            .iter()
+            .map(|p| pythagorean_distance(p.top_left, p.top_right) as f32)
+            .collect();
+        let mut polygon_width_shares: Vec<f32> = vec![];
+        let num_polygons = polygons.len();
+        let mut visible_horizontal_tile_count = VISIBLE_HORIZONTAL_TILE_COUNT;
+
+        match num_polygons {
+            1 => {
+                // Assume only one whole wall is visible
+                visible_horizontal_tile_count = WALL_WIDTH_METERS / WALLPAPER_TILE_WIDTH_METERS;
+                polygon_width_shares.push(1.0);
+            }
+            2 => {
+                let left_polygon = &polygons[0];
+                let right_polygon = &polygons[1];
+
+                let left_polygon_top_width =
+                    pythagorean_distance(left_polygon.top_left, left_polygon.top_right) as f32;
+                let right_polygon_top_width =
+                    pythagorean_distance(right_polygon.top_left, right_polygon.top_right) as f32;
+
+                let left_polygon_share =
+                    left_polygon_top_width / (left_polygon_top_width + right_polygon_top_width);
+                let right_polygon_share = 1.0 - left_polygon_share;
+
+                polygon_width_shares.push(left_polygon_share);
+                polygon_width_shares.push(right_polygon_share);
+            }
+            3 => {
+                let side_polygon_width_share = VISIBLE_WALLS - 1.0;
+
+                let left_polygon = &polygons[0];
+                let right_polygon = &polygons[2];
+
+                let left_polygon_top_width =
+                    pythagorean_distance(left_polygon.top_left, left_polygon.top_right) as f32;
+                let right_polygon_top_width =
+                    pythagorean_distance(right_polygon.top_left, right_polygon.top_right) as f32;
+
+                let mut left_polygon_share =
+                    left_polygon_top_width / (left_polygon_top_width + right_polygon_top_width);
+                let mut right_polygon_share = 1.0 - left_polygon_share;
+
+                left_polygon_share *= side_polygon_width_share;
+                right_polygon_share *= side_polygon_width_share;
+
+                left_polygon_share /= VISIBLE_WALLS;
+                let center_polygon_width_share = 1.0 / VISIBLE_WALLS;
+                right_polygon_share /= VISIBLE_WALLS;
+
+                polygon_width_shares.push(left_polygon_share);
+                polygon_width_shares.push(center_polygon_width_share);
+                polygon_width_shares.push(right_polygon_share);
+            }
+            _ => panic!("Unexpected wall polygon count: {num_polygons}"),
+        }
 
         println!("Polygons: {polygons:?}");
-
-        // Save layout image
-        let mut lines = vec![];
-        for poly in polygons.iter() {
-            lines.append(&mut poly.lines().to_vec());
-        }
+        println!("Polygon width shares: {polygon_width_shares:?}");
 
         let images_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
         let image_path = images_dir.join(format!("{sample_idx}.png"));
         println!("Reading image: {image_path:?}");
         let mut room_image = image::open(image_path).unwrap().into_rgb8();
 
-        let min_room_image_side = 1024; // 2056
+        let min_room_image_side = 2056; // 2056
         let mut room_image_width = room_image.width();
         let mut room_image_height = room_image.height();
         let smallest_room_image_side = u32::min(room_image_width, room_image_height);
@@ -130,6 +199,11 @@ mod tests {
             polygon.bottom_left.1 = (polygon.bottom_left.1 as f32 * polygon_height_scale) as i32;
         }
 
+        // Save layout image
+        let mut lines = vec![];
+        for poly in polygons.iter() {
+            lines.append(&mut poly.lines().to_vec());
+        }
         let overlay_image = draw_lines_on_padded_image(&room_image, &lines, 200);
 
         let output_dir = PathBuf::from("./out");
@@ -159,21 +233,20 @@ mod tests {
 
         // TODO: rename into assembled_tiles_image
         let num_tiles_per_wall = 5;
-        let tile_image = assemble_tiles_image(
+        let tile_image = assemble_tiles_image2(
             &tile_image.into_rgb8(),
-            room_image_width * 2,
-            room_image_height,
-            // TODO: parameterize
-            num_tiles_per_wall * 2,
+            visible_horizontal_tile_count,
+            VISIBLE_VERTICAL_TILES_COUNT,
         );
-        tile_image.save(format!("./out/assembled_tile.jpg")).unwrap();
+        tile_image
+            .save("./out/assembled_tile.jpg")
+            .unwrap();
         let tile_image = DynamicImage::from(tile_image).into_rgba8();
-
+        let assembled_tile_image_width = tile_image.width();
 
         let tile_width = tile_image.width();
         let tile_height = tile_image.height();
         println!("Tile size: {tile_width}x{tile_height}");
-
 
         let mut preview_image = room_image.clone();
         let wall_pixel = Luma([255]);
@@ -182,14 +255,19 @@ mod tests {
         let mut warped_individual_wall_tiles_image =
             RgbaImage::from_pixel(room_image.width(), room_image.height(), warp_default_pixel);
         let mut warped_combined_wall_tiles_image = warped_individual_wall_tiles_image.clone();
-        for (i, polygon) in polygons.iter().enumerate() {
+        let mut wallpaper_section_start_x: f32 = 0.0;
+        for (i, (polygon, width_share)) in
+            polygons.iter().zip(polygon_width_shares.iter()).enumerate()
+        {
             // TODO: compute which part of the assembled tiles image we shall copy for each wall.
             //   Also ensure that connected walls from_points continue so that there are no interuptions
+            let wallpaper_section_width = assembled_tile_image_width as f32 * width_share;
+            let wallpaper_section_end_x = wallpaper_section_start_x + wallpaper_section_width;
             let from_points = [
-                (0f32, 0f32),
-                (tile_width as f32, 0f32),
-                (tile_width as f32, tile_height as f32),
-                (0f32, tile_height as f32),
+                (wallpaper_section_start_x, 0f32),
+                (wallpaper_section_end_x, 0f32),
+                (wallpaper_section_end_x, tile_height as f32),
+                (wallpaper_section_start_x, tile_height as f32),
             ];
             let to_points = [
                 (polygon.top_left.0 as f32, polygon.top_left.1 as f32),
@@ -219,10 +297,20 @@ mod tests {
             let mut hsv_values_image = GrayImage::new(room_image.width(), room_image.height());
             let mut total_wall_blackness = 0f32;
             let mut values_count = 0usize;
+
+            let geo_polygon = GeoPolygon::new(
+                LineString::new(vec![
+                    Coord::from(polygon.top_left),
+                    Coord::from(polygon.top_right),
+                    Coord::from(polygon.bottom_right),
+                    Coord::from(polygon.bottom_left),
+                ]),
+                vec![],
+            );
             for (x, y, room_pixel) in room_image.enumerate_pixels() {
                 let warped_pixel = warped_individual_wall_tiles_image.get_pixel(x, y);
 
-                let is_in_polygon_bounds = *warped_pixel != warp_default_pixel;
+                let is_in_polygon_bounds = geo_polygon.contains(&Coord::from((x as i32, y as i32)));
                 if !is_in_polygon_bounds {
                     // Update current wall mask
                     *current_wall_mask.get_pixel_mut(x, y) = background_mask_pixel;
@@ -261,7 +349,7 @@ mod tests {
             let average_wall_blackness_pixel_value = (average_wall_blackness * 255.0) as i32;
             println!("Average wall {i} blackness: {average_wall_blackness}, pixel: {average_wall_blackness_pixel_value}");
             for (x, y, warped_wall_tile_pixel) in
-            warped_individual_wall_tiles_image.enumerate_pixels_mut()
+                warped_individual_wall_tiles_image.enumerate_pixels_mut()
             {
                 let is_wall = *current_wall_mask.get_pixel(x, y) == wall_pixel;
                 if !is_wall {
@@ -311,15 +399,16 @@ mod tests {
                 0,
                 0,
             );
+
+            wallpaper_section_start_x = wallpaper_section_end_x;
         }
 
-        let dst_preview_image_path = PathBuf::from(format!("./out/preview.jpg"));
-        preview_image.save(dst_preview_image_path).unwrap();
+        preview_image.save("./out/preview.jpg").unwrap();
     }
 
-    impl From<WallPolygon> for Polygon {
-        fn from(wall_polygon: WallPolygon) -> Self {
-            Polygon {
+    impl From<LayoutWallPolygon> for WallPolygon {
+        fn from(wall_polygon: LayoutWallPolygon) -> Self {
+            WallPolygon {
                 top_left: wall_polygon.top_left.into(),
                 top_right: wall_polygon.top_right.into(),
                 bottom_right: wall_polygon.bottom_right.into(),
@@ -345,8 +434,8 @@ mod tests {
         LayoutPoint { x: 0, y: 0 }
     }
 
-    fn blank_polygon() -> WallPolygon {
-        WallPolygon {
+    fn blank_polygon() -> LayoutWallPolygon {
+        LayoutWallPolygon {
             top_left: blank_point(),
             top_right: blank_point(),
             bottom_right: blank_point(),
@@ -360,30 +449,26 @@ mod tests {
         f32::sqrt(((x2 - x1).pow(2) + (y2 - y1).pow(2)) as f32) as i32
     }
 
-    fn assemble_tiles_image(
+    fn assemble_tiles_image2(
         tile_image: &RgbImage,
-        dst_image_width: u32,
-        dst_image_height: u32,
-        num_horizontal_tiles: usize,
+        width_tile_count: f32,
+        height_tile_count: f32,
     ) -> RgbImage {
-        let tile_aspect_ratio = tile_image.width() as f32 / tile_image.height() as f32;
-        let tile_width = dst_image_width / num_horizontal_tiles as u32;
-        let tile_height = (tile_width as f32 / tile_aspect_ratio) as u32;
-        let tile_image = image::imageops::resize(
-            tile_image,
-            tile_width,
-            tile_height,
-            FilterType::Lanczos3,
-        );
+        let tile_width = tile_image.width();
+        let tile_height = tile_image.height();
 
-        let mut dst_assembled_tiles_image = RgbImage::new(dst_image_width, dst_image_height);
-        for (dst_x, dst_y, dst_pixel) in dst_assembled_tiles_image.enumerate_pixels_mut() {
+        let assembled_image_width = (tile_width as f32 * width_tile_count).ceil() as u32;
+        let assembled_image_height = (tile_height as f32 * height_tile_count).ceil() as u32;
+
+        let mut assembled_tiles_image =
+            RgbImage::new(assembled_image_width, assembled_image_height);
+        for (dst_x, dst_y, dst_pixel) in assembled_tiles_image.enumerate_pixels_mut() {
             let src_tile_x = dst_x % tile_width;
             let src_tile_y = dst_y % tile_height;
             *dst_pixel = *tile_image.get_pixel(src_tile_x, src_tile_y);
         }
 
-        dst_assembled_tiles_image
+        assembled_tiles_image
     }
 
     #[test]
@@ -394,7 +479,7 @@ mod tests {
         let image_path = images_dir.join(format!("{sample_idx}.png"));
         let room_image = image::open(image_path).unwrap();
 
-        let mut room_image_rgb = room_image.as_rgb8().unwrap();
+        let room_image_rgb = room_image.as_rgb8().unwrap();
         let mut hsv_values_image = GrayImage::new(room_image.width(), room_image.height());
         // let mut hsv_values: Array2<f32> = Array2::zeros((room_image.height() as usize, room_image.width() as usize));
         for (x, y, pixel) in room_image_rgb.enumerate_pixels() {

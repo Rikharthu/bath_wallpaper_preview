@@ -48,7 +48,7 @@ pub struct RoomLayoutData {
     /// LSUN room type
     pub room_type: u8,
     /// Reconstructed wall polygons based on room type
-    pub wall_polygons: [WallPolygon; 3],
+    pub wall_polygons: [LayoutWallPolygon; 3],
     /// Indicates how many actual wall polygons are stored in [polygons] (at most 3)
     pub num_wall_polygons: u8,
 }
@@ -69,7 +69,7 @@ pub struct LayoutLine {
 
 #[repr(C)]
 #[derive(Default, Copy, Clone)]
-pub struct WallPolygon {
+pub struct LayoutWallPolygon {
     pub top_left: LayoutPoint,
     pub top_right: LayoutPoint,
     pub bottom_right: LayoutPoint,
@@ -302,7 +302,7 @@ pub extern "C" fn shipping_rust_addition(a: c_int, b: c_int) -> c_int {
 }
 
 #[no_mangle]
-pub extern "C" fn process_room_layout_estimation_results(
+pub unsafe extern "C" fn process_room_layout_estimation_results(
     results: *const RoomLayoutEstimationResults,
 ) -> RoomLayoutData {
     let results_ref = unsafe { &*results };
@@ -339,7 +339,7 @@ pub extern "C" fn process_room_layout_estimation_results(
         parse_result.room_type,
     );
 
-    let mut wall_polygons: [WallPolygon; 3] = Default::default();
+    let mut wall_polygons: [LayoutWallPolygon; 3] = Default::default();
     for (idx, polygon) in polygons.iter().enumerate() {
         // TODO: could use `From` impl
         let top_left = LayoutPoint {
@@ -358,7 +358,7 @@ pub extern "C" fn process_room_layout_estimation_results(
             x: polygon.bottom_left.0,
             y: polygon.bottom_left.1,
         };
-        wall_polygons[idx] = WallPolygon {
+        wall_polygons[idx] = LayoutWallPolygon {
             top_left,
             top_right,
             bottom_right,
