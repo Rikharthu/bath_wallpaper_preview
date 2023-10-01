@@ -376,7 +376,6 @@ fn compute_wall_polygons_for_room_type_2(lines: &Vec<Line>, image_height: i32) -
 
     let line_left_top = lines_geo[0];
     let line_center_left = lines_geo[1];
-    let line_center_top = lines_geo[2];
     let line_right_top = lines_geo[3];
     let line_center_right = lines_geo[4];
 
@@ -533,7 +532,6 @@ fn compute_wall_polygons_for_room_type_3(lines: &Vec<Line>, image_height: i32) -
     let line_left_top_intercept = line_params.intercept;
     let line_params = compute_line_params(line_center);
     let line_center_slope = line_params.slope;
-    let line_center_intercept = line_params.intercept;
     let line_center_theta = line_center_slope.atan();
     let line_left_top_theta = line_left_top_slope.atan();
     let line_left_bottom_theta = 2. * line_center_theta - line_left_top_theta;
@@ -1311,7 +1309,6 @@ fn compute_wall_polygons_for_room_type_10(
 
     let line_params = compute_line_params(line_center);
     let line_center_slope = line_params.slope;
-    let line_center_intercept = line_params.intercept;
 
     // Left border
     let line_left_border_slope = line_center_slope;
@@ -1447,19 +1444,18 @@ fn compute_wall_polygons_for_room_type_10(
 #[cfg(test)]
 pub(crate) mod tests {
     use crate::polygons::{
-        compute_wall_polygon_for_room_type_6,
-        compute_wall_polygon_for_room_type_8, compute_wall_polygon_for_room_type_9,
-        compute_wall_polygons, compute_wall_polygons_for_room_type_0,
-        compute_wall_polygons_for_room_type_1, compute_wall_polygons_for_room_type_10,
-        compute_wall_polygons_for_room_type_2, compute_wall_polygons_for_room_type_3,
-        compute_wall_polygons_for_room_type_4, compute_wall_polygons_for_room_type_5,
-        compute_wall_polygons_for_room_type_7, convert_line_coords_image_geo,
-        convert_lines_coords_image_geo, WallPolygon,
+        compute_wall_polygon_for_room_type_6, compute_wall_polygon_for_room_type_8,
+        compute_wall_polygon_for_room_type_9, compute_wall_polygons,
+        compute_wall_polygons_for_room_type_0, compute_wall_polygons_for_room_type_1,
+        compute_wall_polygons_for_room_type_10, compute_wall_polygons_for_room_type_2,
+        compute_wall_polygons_for_room_type_3, compute_wall_polygons_for_room_type_4,
+        compute_wall_polygons_for_room_type_5, compute_wall_polygons_for_room_type_7,
+        convert_lines_coords_image_geo,
     };
     use image::{Rgb, RgbImage};
     use imageproc::definitions::HasBlack;
     use imageproc::drawing;
-    use lsun_res_parser::{Line, RoomLayoutInfo};
+    use lsun_res_parser::Line;
     use ndarray::{Array1, Array2, Axis};
     use ndarray_stats::QuantileExt;
     use serde::{Deserialize, Serialize};
@@ -1593,7 +1589,7 @@ pub(crate) mod tests {
             let room_layout_file_name = format!("layout_{i}.json");
             let room_layout_file_path = results_dir.join(room_layout_file_name);
             let room_layout_file = File::create(room_layout_file_path).unwrap();
-            let mut writer = BufWriter::new(room_layout_file);
+            let writer = BufWriter::new(room_layout_file);
             serde_json::to_writer(writer, &room_layout).unwrap();
 
             // let images_dir = PathBuf::from(
@@ -1818,7 +1814,6 @@ pub(crate) mod tests {
     #[test]
     fn compute_and_draw_polygons_for_room_type_7() {
         let image_height = 512;
-        let image_width = 512;
         let i = 206;
         let lines = vec![((51, 510), (0, 0)), ((417, 510), (419, 1))];
 
@@ -1844,7 +1839,6 @@ pub(crate) mod tests {
     #[test]
     fn compute_and_draw_polygons_for_room_type_8() {
         let image_height = 512;
-        let image_width = 512;
         let i = 1583;
         let lines = vec![((0, 127), (511, 95))];
 
@@ -1867,7 +1861,6 @@ pub(crate) mod tests {
     #[test]
     fn compute_and_draw_polygons_for_room_type_9() {
         let image_height = 512;
-        let image_width = 512;
         let i = 11;
         let lines = vec![((0, 311), (511, 305))];
 
@@ -1890,7 +1883,6 @@ pub(crate) mod tests {
     #[test]
     fn compute_and_draw_polygons_for_room_type_10() {
         let image_height = 512;
-        let image_width = 512;
         let i = 279;
         let lines = vec![((292, 0), (312, 511))];
 

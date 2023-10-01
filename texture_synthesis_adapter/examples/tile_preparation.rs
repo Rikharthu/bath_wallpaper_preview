@@ -1,15 +1,10 @@
 use clap::Parser;
 use image::imageops::FilterType;
 use image::io::Reader as ImageReader;
-use image::{
-    DynamicImage, GenericImage, GenericImageView, ImageBuffer, Rgb, RgbImage, Rgba, RgbaImage,
-};
-use imageproc::definitions::Image;
+use image::{DynamicImage, GenericImage, ImageBuffer, RgbImage, Rgba, RgbaImage};
 use imageproc::drawing::draw_filled_rect_mut;
-use imageproc::drawing::{Blend, Canvas};
 use imageproc::rect::Rect;
 use serde::Serialize;
-use serde_json::error::Category::Syntax;
 use std::fs;
 use std::ops::RangeInclusive;
 use std::path::PathBuf;
@@ -190,7 +185,6 @@ fn main() {
     }
     let tile_image_file = output_dir.join("tile.jpg");
     let example_image_file = output_dir.join("example.jpg");
-    let mask_image_file = output_dir.join("mask.json");
     let tile_assembled_image_file = output_dir.join("tile_assempled.jpg");
     let example_assembled_image_file = output_dir.join("example_assempled.jpg");
     let report_file = output_dir.join("report.json");

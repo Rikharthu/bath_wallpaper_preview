@@ -1,25 +1,14 @@
-use std::path::PathBuf;
-
 #[cfg(test)]
 mod tests {
     use geo::geometry::LineString;
     use geo::geometry::Polygon as GeoPolygon;
     use geo::{Contains, Coord};
     use image::imageops::{overlay, FilterType};
-    use image::{DynamicImage, GrayImage, Luma, Pixel, Rgb, RgbImage, Rgba, RgbaImage};
-    use imageproc::definitions::HasBlack;
-    use imageproc::distance_transform::Norm;
-    use imageproc::geometric_transformations::{
-        warp, warp_into, warp_into_with, Interpolation, Projection,
-    };
-    use lazy_static::lazy_static;
+    use image::{DynamicImage, GrayImage, Luma, RgbImage, Rgba, RgbaImage};
+    use imageproc::geometric_transformations::{warp_into, Interpolation, Projection};
     use lsun_res_parser::Point;
-    use ndarray::Array2;
-    use once_cell::unsync::Lazy;
     use rgb_hsv::{hsv_to_rgb, rgb_to_hsv};
-    use serde::Deserialize;
-    use std::cell::OnceCell;
-    use std::{fs::File, io::BufReader, path::PathBuf};
+    use std::path::PathBuf;
 
     use crate::{
         polygons::{tests::draw_lines_on_padded_image, WallPolygon},
@@ -38,10 +27,6 @@ mod tests {
     #[test]
     fn preview_generation_works() {
         let sample_idx = 2;
-        let wallpaper_tile_name = "wallpaper15";
-
-        let fixtures_dir = PathBuf::from("./fixtures");
-        let wallpaper_file_path = fixtures_dir.join(format!("{wallpaper_tile_name}.jpg"));
 
         // Image 2.jpg
         // TODO: resize polygons to match input image size
@@ -97,11 +82,8 @@ mod tests {
                 wall_polygon.into()
             })
             .collect();
-        // Count width shares using top line since we start applying wallpaper tiles from [0; 0]
-        let polygon_wall_widths: Vec<f32> = polygons
-            .iter()
-            .map(|p| pythagorean_distance(p.top_left, p.top_right) as f32)
-            .collect();
+
+        // Compute width shares using top line since we start applying wallpaper tiles from [0; 0]
         let mut polygon_width_shares: Vec<f32> = vec![];
         let num_polygons = polygons.len();
         let mut visible_horizontal_tile_count = VISIBLE_HORIZONTAL_TILE_COUNT;
@@ -232,15 +214,12 @@ mod tests {
         // let tile_image = tile_image.into_rgba8();
 
         // TODO: rename into assembled_tiles_image
-        let num_tiles_per_wall = 5;
         let tile_image = assemble_tiles_image2(
             &tile_image.into_rgb8(),
             visible_horizontal_tile_count,
             VISIBLE_VERTICAL_TILES_COUNT,
         );
-        tile_image
-            .save("./out/assembled_tile.jpg")
-            .unwrap();
+        tile_image.save("./out/assembled_tile.jpg").unwrap();
         let tile_image = DynamicImage::from(tile_image).into_rgba8();
         let assembled_tile_image_width = tile_image.width();
 
@@ -308,8 +287,6 @@ mod tests {
                 vec![],
             );
             for (x, y, room_pixel) in room_image.enumerate_pixels() {
-                let warped_pixel = warped_individual_wall_tiles_image.get_pixel(x, y);
-
                 let is_in_polygon_bounds = geo_polygon.contains(&Coord::from((x as i32, y as i32)));
                 if !is_in_polygon_bounds {
                     // Update current wall mask

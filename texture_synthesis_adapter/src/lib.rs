@@ -182,8 +182,7 @@ pub extern "C" fn synthesize_texture(
     let buffer_slice = buffer_vec.into_boxed_slice();
     let buffer_len = buffer_slice.len();
     println!("Buffer length: {buffer_len}");
-    let buffer_ptr = Box::into_raw(buffer_slice) as *const u8;
-    return buffer_ptr;
+    Box::into_raw(buffer_slice) as *const u8
 }
 
 fn generate_mask_image(size: Dims, ratio: f32) -> RgbImage {
@@ -301,6 +300,7 @@ pub extern "C" fn shipping_rust_addition(a: c_int, b: c_int) -> c_int {
     a + b
 }
 
+/// # Safety `results` must not be `null`
 #[no_mangle]
 pub unsafe extern "C" fn process_room_layout_estimation_results(
     results: *const RoomLayoutEstimationResults,
@@ -312,7 +312,7 @@ pub unsafe extern "C" fn process_room_layout_estimation_results(
     let type_array = results_ref.type_.array();
     println!("Type array: {type_array:?}");
 
-    let room_type = type_array.mean_axis(Axis(0)).unwrap().argmax().unwrap() as usize;
+    let room_type: usize = type_array.mean_axis(Axis(0)).unwrap().argmax().unwrap();
     println!("Room type: {room_type}");
 
     let edges_array = results_ref.edges.array();
@@ -392,8 +392,7 @@ pub unsafe extern "C" fn process_room_layout_estimation_results(
 #[cfg(test)]
 mod tests {
     use image::io::Reader as ImageReader;
-    use image::{GenericImageView, ImageBuffer, RgbImage};
-    use ndarray::{array, Array2};
+    use image::RgbImage;
 
     #[test]
     fn test_image() {
@@ -409,7 +408,7 @@ mod tests {
 
         // Reconstruct image from bytes
         // let mut image2 = RgbImage::new(image.width(), image.height());
-        let image2 = RgbImage::from_raw(image.width(), image.height(), image.to_bytes()).unwrap();
+        let image2 = RgbImage::from_raw(image.width(), image.height(), image.into_bytes()).unwrap();
         image2.save("./assets/image2.jpg").unwrap();
     }
 }
