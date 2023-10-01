@@ -1,0 +1,454 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'texture_synthesis_adapter'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=texture_synthesis_adapter"
+                ],
+                "filter": {
+                    "name": "texture_synthesis_adapter",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'tile_preparation'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=tile_preparation",
+                    "--package=texture_synthesis_adapter"
+                ],
+                "filter": {
+                    "name": "tile_preparation",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'tile_preparation'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=tile_preparation",
+                    "--package=texture_synthesis_adapter"
+                ],
+                "filter": {
+                    "name": "tile_preparation",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'texture-synthesis'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "texture-synthesis",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '02_multi_example_synthesis'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=02_multi_example_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "02_multi_example_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '02_multi_example_synthesis'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=02_multi_example_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "02_multi_example_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '05_inpaint'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=05_inpaint",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "05_inpaint",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '05_inpaint'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=05_inpaint",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "05_inpaint",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '07_tiling_texture'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=07_tiling_texture",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "07_tiling_texture",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '07_tiling_texture'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=07_tiling_texture",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "07_tiling_texture",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '08_repeat_transform'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=08_repeat_transform",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "08_repeat_transform",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '08_repeat_transform'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=08_repeat_transform",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "08_repeat_transform",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '04_style_transfer'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=04_style_transfer",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "04_style_transfer",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '04_style_transfer'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=04_style_transfer",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "04_style_transfer",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '06_inpaint_channel'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=06_inpaint_channel",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "06_inpaint_channel",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '06_inpaint_channel'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=06_inpaint_channel",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "06_inpaint_channel",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '03_guided_synthesis'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=03_guided_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "03_guided_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '03_guided_synthesis'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=03_guided_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "03_guided_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '01_single_example_synthesis'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=01_single_example_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "01_single_example_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '01_single_example_synthesis'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=01_single_example_synthesis",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "01_single_example_synthesis",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example '09_sample_masks'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=09_sample_masks",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "09_sample_masks",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example '09_sample_masks'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=09_sample_masks",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "09_sample_masks",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'diff'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=diff",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "diff",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug benchmark 'all-the-things'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bench=all-the-things",
+                    "--package=texture-synthesis"
+                ],
+                "filter": {
+                    "name": "all-the-things",
+                    "kind": "bench"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

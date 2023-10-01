@@ -3,19 +3,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct RgbaImageInfo {
+typedef struct ImageInfo {
   const uint8_t *data;
   uintptr_t count;
   uintptr_t width;
   uintptr_t height;
-} RgbaImageInfo;
-
-typedef struct SegmentationMap {
-  const float *data;
-  uintptr_t height;
-  uintptr_t width;
-  uintptr_t strides[2];
-} SegmentationMap;
+} ImageInfo;
 
 typedef struct LayoutPoint {
   int32_t x;
@@ -27,12 +20,12 @@ typedef struct LayoutLine {
   struct LayoutPoint end;
 } LayoutLine;
 
-typedef struct WallPolygon {
+typedef struct LayoutWallPolygon {
   struct LayoutPoint top_left;
   struct LayoutPoint top_right;
   struct LayoutPoint bottom_right;
   struct LayoutPoint bottom_left;
-} WallPolygon;
+} LayoutWallPolygon;
 
 typedef struct RoomLayoutData {
   /**
@@ -50,12 +43,19 @@ typedef struct RoomLayoutData {
   /**
    * Reconstructed wall polygons based on room type
    */
-  struct WallPolygon wall_polygons[3];
+  struct LayoutWallPolygon wall_polygons[3];
   /**
    * Indicates how many actual wall polygons are stored in [polygons] (at most 3)
    */
   uint8_t num_wall_polygons;
 } RoomLayoutData;
+
+typedef struct SegmentationMap {
+  const float *data;
+  uintptr_t height;
+  uintptr_t width;
+  uintptr_t strides[2];
+} SegmentationMap;
 
 typedef struct MLMultiArray3DInfo {
   const float *data;
@@ -78,12 +78,20 @@ typedef struct RoomLayoutEstimationResults {
 
 void release_image_buffer(const uint8_t *buffer_ptr, uintptr_t length);
 
-const uint8_t *synthesize_texture(const struct RgbaImageInfo *sample_info, uint32_t input_resize);
+struct ImageInfo generate_preview(const struct ImageInfo *room_image,
+                                  const struct ImageInfo *wall_mask_image,
+                                  const struct ImageInfo *wallpaper_tile_image,
+                                  struct RoomLayoutData room_layout);
 
-const uint8_t *rust_process_data(const struct RgbaImageInfo *image_info);
+const uint8_t *synthesize_texture(const struct ImageInfo *sample_info, uint32_t input_resize);
+
+const uint8_t *rust_process_data(const struct ImageInfo *image_info);
 
 void process_segmentation_map(const struct SegmentationMap *segmentation_map);
 
 int shipping_rust_addition(int a, int b);
 
+/**
+ * # Safety `results` must not be `null`
+ */
 struct RoomLayoutData process_room_layout_estimation_results(const struct RoomLayoutEstimationResults *results);

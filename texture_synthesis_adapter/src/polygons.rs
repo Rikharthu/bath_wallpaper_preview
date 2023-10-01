@@ -1,3 +1,4 @@
+use crate::ffi::LayoutWallPolygon;
 use lsun_res_parser::{Line, Point};
 use polyfit_rs::polyfit_rs::polyfit;
 
@@ -76,6 +77,17 @@ pub struct WallPolygon {
     pub top_right: Point,
     pub bottom_right: Point,
     pub bottom_left: Point,
+}
+
+impl From<LayoutWallPolygon> for WallPolygon {
+    fn from(polygon: LayoutWallPolygon) -> Self {
+        Self {
+            top_left: polygon.top_left.to_point(),
+            top_right: polygon.top_right.to_point(),
+            bottom_right: polygon.bottom_right.to_point(),
+            bottom_left: polygon.bottom_left.to_point(),
+        }
+    }
 }
 
 impl WallPolygon {

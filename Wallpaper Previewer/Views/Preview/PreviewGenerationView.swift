@@ -32,6 +32,9 @@ struct PreviewGenerationView: View {
         ZStack(alignment: .center) {
             
             VStack {
+                Image(uiImage: viewModel.segmentationImage)
+                    .resizable()
+                    .frame(width: 256, height: 256)
                 ProgressView(
                     label: {
                         Text(progressLabel.wrappedValue)

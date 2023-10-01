@@ -170,16 +170,30 @@ extension PreviewGenerationScreen {
                 return
             }
             
-            await prepareWallpaperPreview(
+            let previewImage: UIImage
+            switch await prepareWallpaperPreview(
                 roomPhoto: roomPhoto,
                 roomWallMask: segmentationImage,
                 roomLayout: roomLayout,
                 wallpaperTile: wallpaperTile
-            )
+            ) {
+            case .success(let image):
+                previewImage = image
+            case .failure(let error):
+                print("Could not prepare preview: \(error)")
+                previewGenerationStatus = .error("Could not prepare preview: \(error)")
+                return
+            }
+            
+            
             
             // MARK: Done
             // TODO: implement
             previewGenerationStatus = .done(MediaFile(id: "1", filePath: "1.jpg"))
+            
+            
+            // TODO: open pinch view after some delay so that user sees "Done" text
+            // TODO: edit navigation backstack so that "back" button returns to flow start (resetting state)
         }
         
         private func prepareWallpaperPreview(
@@ -187,7 +201,7 @@ extension PreviewGenerationScreen {
             roomWallMask: UIImage,
             roomLayout: RoomLayout,
             wallpaperTile: UIImage
-        ) async {
+        ) async -> Result<UIImage, Error> {
             print("Preparing wallpaper preview")
             
             printImageInfo(image: roomPhoto, title: "roomPhoto")
@@ -195,6 +209,32 @@ extension PreviewGenerationScreen {
             printImageInfo(image: wallpaperTile, title: "wallpaperTile")
             
             // TODO: assemble preview
+            
+            // FIXME: for debug
+            let previewImageInfo = roomPhoto.withUnsafeRgbaImageInfoPointer { roomImageInfoPtr in
+                roomWallMask.withUnsafeGrayImageInfoPointer { roomWallMaskImageInfoPtr in
+                    wallpaperTile.withUnsafeRgbaImageInfoPointer { wallpaperTileImageInfoPtr in
+                        generate_preview(
+                            roomImageInfoPtr,
+                            roomWallMaskImageInfoPtr,
+                            wallpaperTileImageInfoPtr,
+                            roomLayout.ffiModel
+                        )
+                    }
+                }
+            }
+            
+            let previewImage = UIImage(fromRgbaImageInfo: previewImageInfo)
+            
+            switch fileHelper.savePreviewImage(image: previewImage) {
+            case .success(let previewImageFile):
+                print("Successfully saved preview to: \(previewImageFile.filePath)")
+            case .failure(let error):
+                return .failure(PreviewError(message: "Could not save preview: \(error)"))
+            }
+            
+            return .success(previewImage)
+            
         }
         
         private func printImageInfo(image: UIImage, title: String) {

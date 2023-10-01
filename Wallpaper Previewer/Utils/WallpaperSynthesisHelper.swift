@@ -24,23 +24,9 @@ final class WallpaperSynthesisHelper {
         let inputSize = wallpaperPhoto.size
         
         let synthesizedRgbDataCount = Self.synthesisSize * Self.synthesisSize * 4 // Hardocded in Rust code for now
-        var synthesizedRgbData: UnsafePointer<UInt8>? = rgbData.withUnsafeBufferPointer { rgbDataPtr in
-            let imageInfo = RgbaImageInfo(
-                data: rgbDataPtr.baseAddress!,
-                count: UInt(rgbData.count),
-                width: UInt(inputSize.width),
-                height: UInt(inputSize.height)
-            )
-            return withUnsafePointer(to: imageInfo) { imageInfoPtr in
-                // TODO: pass generator process callback to report progress on UI
-                // https://github.com/thombles/dw2019rust/blob/master/modules/07%20-%20Swift%20callbacks.md
-                // Also describe this in Disseration, as it is basic of UX - report progress for long-running tasks
-                // TODO: error handling if nil
-                synthesize_texture(
-                    imageInfoPtr,
-                    UInt32(Self.synthesisSize)
-                )!
-            }
+        
+        var synthesizedRgbData = wallpaperPhoto.withUnsafeRgbaImageInfoPointer { imageInfoPtr in
+            synthesize_texture(imageInfoPtr, UInt32(Self.synthesisSize))
         }
         
         // This constructor copies the data from the buffer
@@ -58,24 +44,25 @@ final class WallpaperSynthesisHelper {
         // TODO: describe in Dissertation why we are doing that (best practice for unsafe code + source link)
         synthesizedRgbData = nil
         
-        let reconstructedCGImage = array.withUnsafeMutableBytes { arrayBytesPtr in
-            let context = CGContext(
-                data: arrayBytesPtr.baseAddress,
-                // TODO: use generated wallpaper tile size
-//                width: Int(wallpaperPhoto.size.width),
-//                height: Int(wallpaperPhoto.size.height),
-                width: Self.synthesisSize,
-                height: Self.synthesisSize,
-                bitsPerComponent: 8,
-//                bytesPerRow: 4 * Int(wallpaperPhoto.size.width),
-                bytesPerRow: 4 * Self.synthesisSize,
-                space: CGColorSpace(name: CGColorSpace.sRGB)!,
-                bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
-            )!
-            return context.makeImage()
-        }! // TODO: error handling if nil
-        
-        let wallpaperTile = UIImage(cgImage: reconstructedCGImage)
+//        let reconstructedCGImage = array.withUnsafeMutableBytes { arrayBytesPtr in
+//            let context = CGContext(
+//                data: arrayBytesPtr.baseAddress,
+//                // TODO: use generated wallpaper tile size
+////                width: Int(wallpaperPhoto.size.width),
+////                height: Int(wallpaperPhoto.size.height),
+//                width: Self.synthesisSize,
+//                height: Self.synthesisSize,
+//                bitsPerComponent: 8,
+////                bytesPerRow: 4 * Int(wallpaperPhoto.size.width),
+//                bytesPerRow: 4 * Self.synthesisSize,
+//                space: CGColorSpace(name: CGColorSpace.sRGB)!,
+//                bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+//            )!
+//            return context.makeImage()
+//        }! // TODO: error handling if nil
+//        
+//        let wallpaperTile = UIImage(cgImage: reconstructedCGImage)
+        let wallpaperTile = UIImage(fromRgbaArray: array, sized: CGSize(width: Self.synthesisSize, height: Self.synthesisSize))
         
         return .success(wallpaperTile)
     }

@@ -24,7 +24,7 @@
 		D5088FA72982A77300088359 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5088FA62982A77300088359 /* Assets.xcassets */; };
 		D5088FAA2982A77300088359 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5088FA92982A77300088359 /* Preview Assets.xcassets */; };
 		D5088FB12982A78100088359 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5088FB02982A78100088359 /* ImagePicker.swift */; };
-		D513A1F4298D721300771077 /* UIImage+Conversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513A1F3298D721300771077 /* UIImage+Conversions.swift */; };
+		D513A1F4298D721300771077 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513A1F3298D721300771077 /* UIImage+Extensions.swift */; };
 		D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */; };
 		D535115C2ABA1131009B9029 /* RoomLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D535115B2ABA1131009B9029 /* RoomLayout.swift */; };
 		D535115E2ABA1157009B9029 /* RoomType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D535115D2ABA1157009B9029 /* RoomType.swift */; };
@@ -105,7 +105,7 @@
 		D5088FA62982A77300088359 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D5088FA92982A77300088359 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D5088FB02982A78100088359 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		D513A1F3298D721300771077 /* UIImage+Conversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Conversions.swift"; sourceTree = "<group>"; };
+		D513A1F3298D721300771077 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
 		D53511592ABA0DA3009B9029 /* MLMultiArray+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Utils.swift"; sourceTree = "<group>"; };
 		D535115B2ABA1131009B9029 /* RoomLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomLayout.swift; sourceTree = "<group>"; };
 		D535115D2ABA1157009B9029 /* RoomType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomType.swift; sourceTree = "<group>"; };
@@ -268,9 +268,9 @@
 				D57AEDB42A9A278A005A6E9A /* Models */,
 				D5897FB02AB3769A0099E31E /* View Models */,
 				D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */,
+				D5852D032985B67900877628 /* FfiBridge.h */,
 				D513A1F2298D71F500771077 /* Utils */,
 				D5088FB02982A78100088359 /* ImagePicker.swift */,
-				D5852D032985B67900877628 /* FfiBridge.h */,
 				D548879929ABB016003A543B /* SegmentationVisualizationView.swift */,
 				D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */,
 				D5088FA42982A77200088359 /* ContentView.swift */,
@@ -294,7 +294,7 @@
 				D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */,
 				D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */,
 				D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */,
-				D513A1F3298D721300771077 /* UIImage+Conversions.swift */,
+				D513A1F3298D721300771077 /* UIImage+Extensions.swift */,
 				D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */,
 				D54887A629ABD120003A543B /* Math.swift */,
 				D54D5C6529AE85CD00701A42 /* UIImage+Orientation.swift */,
@@ -599,7 +599,7 @@
 				D53511662ABA12E7009B9029 /* RoomLayout+Conversions.swift in Sources */,
 				D5897FB42AB37F930099E31E /* AddImageGridItemView.swift in Sources */,
 				D55807AE2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift in Sources */,
-				D513A1F4298D721300771077 /* UIImage+Conversions.swift in Sources */,
+				D513A1F4298D721300771077 /* UIImage+Extensions.swift in Sources */,
 				D5897FB82AB47C240099E31E /* InfoPanelView.swift in Sources */,
 				D50380A62AB2001D007933A6 /* GalleryScreen.swift in Sources */,
 				D53D25B32ABDF8ED005846E0 /* SeedData.swift in Sources */,
