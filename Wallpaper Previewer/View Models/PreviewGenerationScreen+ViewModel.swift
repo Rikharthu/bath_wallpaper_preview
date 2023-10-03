@@ -24,14 +24,19 @@ extension PreviewGenerationScreen {
     class ViewModel: ObservableObject {
         
         @Published
-        var previewGenerationStatus: PreviewGenerationStatus {
+        private(set) var previewGenerationStatus: PreviewGenerationStatus {
             didSet {
                 updateBackButtonStatus()
+                if case .done(let previewFile) = self.previewGenerationStatus {
+                    self.generatedPreviewFile = previewFile
+                } else {
+                    self.generatedPreviewFile = nil
+                }
             }
         }
         
         @Published
-        var isBackButtonEnabled: Bool = true
+        private(set) var isBackButtonEnabled: Bool = true
         
         // TODO: switch to state pattern instead, where each step is characterized by an enum
         @Published
@@ -53,13 +58,17 @@ extension PreviewGenerationScreen {
         @Published
         var currentTab: PreviewStep = .pickRoomPhoto
         
-        // FIXME: for debug
         @Published
-        var segmentationImage: UIImage = .init()
+        var generatedPreviewFile: MediaFile?
         
+        // FIXME: For debug
+        @Published
+        private(set) var segmentationImage: UIImage = .init()
+        
+        // TODO: Use dependency injection
         private let inferenceHelper = RoomInferenceHelper()
         private let fileHelper = FileHelper.shared
-        private let wallpaperSynthesisHelper = WallpaperSynthesisHelper()
+        private let wallpaperSynthesisHelper = WallpaperTileSynthesisService()
         
         init() {
             previewGenerationStatus = .idle
@@ -77,7 +86,7 @@ extension PreviewGenerationScreen {
         
         private func updateBackButtonStatus() {
             switch previewGenerationStatus {
-            case .idle, .error(_), .done(_):
+            case .idle, .error(_):
                 isBackButtonEnabled = true
             case _:
                 isBackButtonEnabled = false
@@ -177,23 +186,13 @@ extension PreviewGenerationScreen {
                 roomLayout: roomLayout,
                 wallpaperTile: wallpaperTile
             ) {
-            case .success(let image):
-                previewImage = image
+            case .success(let previewMediaFile):
+                previewGenerationStatus = .done(previewMediaFile)
             case .failure(let error):
                 print("Could not prepare preview: \(error)")
                 previewGenerationStatus = .error("Could not prepare preview: \(error)")
                 return
             }
-            
-            
-            
-            // MARK: Done
-            // TODO: implement
-            previewGenerationStatus = .done(MediaFile(id: "1", filePath: "1.jpg"))
-            
-            
-            // TODO: open pinch view after some delay so that user sees "Done" text
-            // TODO: edit navigation backstack so that "back" button returns to flow start (resetting state)
         }
         
         private func prepareWallpaperPreview(
@@ -201,14 +200,15 @@ extension PreviewGenerationScreen {
             roomWallMask: UIImage,
             roomLayout: RoomLayout,
             wallpaperTile: UIImage
-        ) async -> Result<UIImage, Error> {
+        ) async -> Result<MediaFile, Error> {
             print("Preparing wallpaper preview")
             
-            printImageInfo(image: roomPhoto, title: "roomPhoto")
-            printImageInfo(image: roomWallMask, title: "roomWallMask")
-            printImageInfo(image: wallpaperTile, title: "wallpaperTile")
+//            printImageInfo(image: roomPhoto, title: "roomPhoto")
+//            printImageInfo(image: roomWallMask, title: "roomWallMask")
+//            printImageInfo(image: wallpaperTile, title: "wallpaperTile")
             
             // TODO: assemble preview
+            // TODO: move this to some helper class/utils so that we don't work with pointers and memory management in ViewModel
             
             // FIXME: for debug
             let previewImageInfo = roomPhoto.withUnsafeRgbaImageInfoPointer { roomImageInfoPtr in
@@ -226,15 +226,15 @@ extension PreviewGenerationScreen {
             
             let previewImage = UIImage(fromRgbaImageInfo: previewImageInfo)
             
+            release_image_buffer(previewImageInfo.data, previewImageInfo.count)
+            
             switch fileHelper.savePreviewImage(image: previewImage) {
             case .success(let previewImageFile):
                 print("Successfully saved preview to: \(previewImageFile.filePath)")
+                return .success(previewImageFile)
             case .failure(let error):
                 return .failure(PreviewError(message: "Could not save preview: \(error)"))
             }
-            
-            return .success(previewImage)
-            
         }
         
         private func printImageInfo(image: UIImage, title: String) {

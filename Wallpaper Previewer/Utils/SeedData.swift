@@ -34,12 +34,26 @@ func seedInitialDataIfNeeded() async {
         _ = try! fileHelper.saveRoomPhoto(image: roomPhotoImage).get()
     }
     
-    // TODO: seed initial data from asset directory to FileHelper
     let wallpaperIndices = Array(1...15)
     for wallpaperIndex in wallpaperIndices {
         let wallpaperPhotoAssetName = "SeedData/WallpaperPhotos/wallpaper\(wallpaperIndex)"
         let wallpaperPhotoImage = UIImage(named: wallpaperPhotoAssetName)!
         _ = try! fileHelper.saveWallpaperPhoto(image: wallpaperPhotoImage).get()
+    }
+    
+    // Specifically selected images
+    let tileNames = ["grid_tile_1", "grid_tile_2"]
+    let roomNames = ["grid_room_1", "grid_room_1_left", "grid_room_1_right", "grid_room_2", "grid_room_2_left"]
+    
+    for tileName in tileNames {
+        let wallpaperPhotoAssetName = "SeedData/WallpaperPhotos/\(tileName)"
+        let wallpaperPhotoImage = UIImage(named: wallpaperPhotoAssetName)!
+        _ = try! fileHelper.saveWallpaperPhoto(image: wallpaperPhotoImage).get()
+    }
+    for roomName in roomNames {
+        let roomPhotoAssetName = "SeedData/RoomPhotos/\(roomName)"
+        let roomPhotoImage = UIImage(named: roomPhotoAssetName)!
+        _ = try! fileHelper.saveRoomPhoto(image: roomPhotoImage).get()
     }
     
     print("Finished seeding data")

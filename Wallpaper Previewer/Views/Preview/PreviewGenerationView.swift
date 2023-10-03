@@ -83,9 +83,5 @@ struct PreviewGenerationView_Previews: PreviewProvider {
         PreviewGenerationView(
             viewModel: viewModel
         )
-        // Override status from the logic that triggers when PreviewGenerationView appears
-        .task {
-            viewModel.previewGenerationStatus = .segmentation
-        }
     }
 }

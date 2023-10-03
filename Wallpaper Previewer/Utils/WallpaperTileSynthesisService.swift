@@ -1,5 +1,5 @@
 //
-//  WallpaperSynthesisHelper.swift
+//  WallpaperTileSynthesisService.swift
 //  Wallpaper Previewer
 //
 //  Created by Richard Kuodis on 23/09/2023.
@@ -8,9 +8,17 @@
 import Foundation
 import UIKit
 
-final class WallpaperSynthesisHelper {
+struct WallpaperTileSynthesisService {
     
-    private static let synthesisSize: Int = 320
+    let synthesisSize: Int
+    
+    init() {
+        self.synthesisSize = 320
+    }
+    
+    init(synthesisSize: Int) {
+        self.synthesisSize = synthesisSize
+    }
     
     // TODO: to handle progress report, can we make it AsyncSequence that returns either current loading status or synthesized image (finished) (using enum)
     func synthesizeWallpaperTile(fromPhoto wallpaperPhoto: UIImage) async -> Result<UIImage, SynthesisError> {
@@ -23,11 +31,13 @@ final class WallpaperSynthesisHelper {
         // TODO: preprocessing?
         let inputSize = wallpaperPhoto.size
         
-        let synthesizedRgbDataCount = Self.synthesisSize * Self.synthesisSize * 4 // Hardocded in Rust code for now
+        let synthesizedRgbDataCount = synthesisSize * synthesisSize * 4
         
+        // TODO: make synthesize_texture return RGBA ImageINfo and use UIImage(fromRgbaImageInfo:) extension
         var synthesizedRgbData = wallpaperPhoto.withUnsafeRgbaImageInfoPointer { imageInfoPtr in
-            synthesize_texture(imageInfoPtr, UInt32(Self.synthesisSize))
+            synthesize_texture(imageInfoPtr, UInt32(synthesisSize))
         }
+        
         
         // This constructor copies the data from the buffer
         var array = {
@@ -62,7 +72,7 @@ final class WallpaperSynthesisHelper {
 //        }! // TODO: error handling if nil
 //        
 //        let wallpaperTile = UIImage(cgImage: reconstructedCGImage)
-        let wallpaperTile = UIImage(fromRgbaArray: array, sized: CGSize(width: Self.synthesisSize, height: Self.synthesisSize))
+        let wallpaperTile = UIImage(fromRgbaArray: array, sized: CGSize(width: synthesisSize, height: synthesisSize))
         
         return .success(wallpaperTile)
     }

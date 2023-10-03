@@ -225,7 +225,6 @@ pub(crate) fn create_preview(
         let average_wall_blackness_pixel_value = (average_wall_blackness * 255.0) as i32;
         println!("Average wall {i} blackness: {average_wall_blackness}, pixel: {average_wall_blackness_pixel_value}");
 
-        // Transfer shadows onto warped tiles image
         for (x, y, warped_wall_tile_pixel) in
             warped_individual_wall_tiles_image.enumerate_pixels_mut()
         {
@@ -243,16 +242,21 @@ pub(crate) fn create_preview(
                 warped_wall_tile_pixel.0[1] as f32 / 255.0,
                 warped_wall_tile_pixel.0[2] as f32 / 255.0,
             );
+            
             let tile_pixel_hsv = rgb_to_hsv(tile_pixel_rgb);
             let tile_pixel_hsv_value = (tile_pixel_hsv.2 * 255.0) as i32;
+            
             let shifted_tile_pixel_hsv_value =
                 (tile_pixel_hsv_value + blackness_delta).clamp(0, 255) as f32 / 255.0;
+            
+            
             let shifted_tile_pixel_hsv = (
                 tile_pixel_hsv.0,
                 tile_pixel_hsv.1,
                 shifted_tile_pixel_hsv_value,
             );
             let shifted_tile_pixel_rgb = hsv_to_rgb(shifted_tile_pixel_hsv);
+            
             *warped_wall_tile_pixel = Rgba([
                 (shifted_tile_pixel_rgb.0 * 255.0) as u8,
                 (shifted_tile_pixel_rgb.1 * 255.0) as u8,

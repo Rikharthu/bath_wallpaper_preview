@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MediaFile {
+struct MediaFile: Identifiable {
     let id: String
     let filePath: String
 }

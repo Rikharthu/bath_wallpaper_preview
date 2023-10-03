@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PreviewGenerationScreen: View {
+    @EnvironmentObject
+    private var navigationManager: NavigationManager
     @Environment(\.presentationMode)
     private var presentationMode: Binding<PresentationMode>
     @StateObject
@@ -19,6 +21,7 @@ struct PreviewGenerationScreen: View {
     //  4. Select wallpaper
     //  5. Load or generate tile, display some tiled examples as image
     //  6. Assemble everything into preview
+    
     
     
     var body: some View {
@@ -38,9 +41,16 @@ struct PreviewGenerationScreen: View {
             ).tag(PreviewStep.preparePreview)
             
             // TODO: when done generating preview, show pinch view with this image and navigation must exit. make it an additional PreviewStep variant
-            
-            
         }
+        .sheet(
+            item: $viewModel.generatedPreviewFile,
+            onDismiss: {
+                onPreviewSheetDismissed()
+            },
+            content: { mediaFile in
+                PinchPhotoSheetView(photoFilePath: mediaFile.filePath)
+            }
+        )
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {
@@ -60,10 +70,17 @@ struct PreviewGenerationScreen: View {
         // TODO: disable manual scrolling, use only progammatic buttons "Next" that become enabled once user is done on current page
     }
     
+    private func onPreviewSheetDismissed() {
+        // TODO: replace with .home when we introduce that route
+        navigationManager.pop()
+    }
+    
     private func onBackButtonTapped() {
         switch viewModel.currentTab {
         case .pickRoomPhoto:
             presentationMode.wrappedValue.dismiss()
+        case .preparePreview:
+            navigationManager.pop()
         case _:
             viewModel.returnToPreviousStage()
         }

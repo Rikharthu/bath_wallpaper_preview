@@ -9,16 +9,22 @@ import CoreML
 import SwiftUI
 import Vision
 
-final class RoomInferenceHelper {
+
+// TODO: make it operate on a higher abstraction level, parsing output as well and returning UIImage/RoomLayout. Then rename this actor to RoomLayoutEstimationService
+actor RoomInferenceHelper {
+    
+    // We lazily and asynchronously initialize and cache models as suggested by:
+    // "Improve Core ML integration with async predictions"
+    //   https://developer.apple.com/videos/play/wwdc2023/10049/
+    private var cachedLayoutModel: VNCoreMLModel?
+    private var cachedSegmentationModel: VNCoreMLModel?
     
     func extractRoomLayout(_ image: UIImage) async -> Result<[VNObservation], Error> {
-        let fixedImage = image.fixOrientation()
+        // let fixedImage = image.fixOrientation()
         
         let sourceImageOrientation = image.imageOrientation
-        let sourceImageScale = image.scale
-        print("Image orientation: \(sourceImageOrientation), scale: \(sourceImageScale)")
         
-        let layoutModel = await loadLayoutModel()
+        let layoutModel = await getLayoutModel()
         
         let observationResults = await withCheckedContinuation { (continuation: CheckedContinuation<Result<[VNObservation], Error>, Never>) in
             let segmentationRequest = VNCoreMLRequest(model: layoutModel) { request, error in
@@ -50,14 +56,11 @@ final class RoomInferenceHelper {
     }
     
     func segmentImage(_ image: UIImage) async -> Result<VNObservation, Error> {
-        let fixedImage = image.fixOrientation()
+        // let fixedImage = image.fixOrientation()
         
         let sourceImageOrientation = image.imageOrientation
-        let sourceImageScale = image.scale
-        print("Image orientation: \(sourceImageOrientation), scale: \(sourceImageScale)")
         
-        // TODO: consider caching it if we ever need to reuse it
-        let segmentationModel = await loadSegmentationModel()
+        let segmentationModel = await getSegmentationModel()
         
         let observationResult = await withCheckedContinuation { (continuation: CheckedContinuation<Result<VNObservation, Error>, Never>) in
             let segmentationRequest = VNCoreMLRequest(model: segmentationModel) { request, error in
@@ -65,10 +68,10 @@ final class RoomInferenceHelper {
                     continuation.resume(returning: .failure(error))
                 } else {
                     let observation: VNObservation = request.results!.first!
-                    continuation.resume(returning: .success(request.results!.first!))
+                    continuation.resume(returning: .success(observation))
                 }
             }
-            segmentationRequest.imageCropAndScaleOption = .centerCrop
+            segmentationRequest.imageCropAndScaleOption = .scaleFill
             
             let cgImageOrientation = CGImagePropertyOrientation(sourceImageOrientation)
             print("Input image orientation: \(cgImageOrientation), is up: \(cgImageOrientation == .up)")
@@ -89,7 +92,25 @@ final class RoomInferenceHelper {
         return observationResult
     }
     
-    private func loadLayoutModel() async -> VNCoreMLModel {
+    private func getLayoutModel() async -> VNCoreMLModel {
+        if self.cachedLayoutModel == nil {
+            // FIXME: we are getting "unable to mmap file" error when reusing model
+//             self.cachedLayoutModel = await Self.loadLayoutModel()
+            return await Self.loadLayoutModel()
+        }
+        return self.cachedLayoutModel!
+    }
+    
+    private func getSegmentationModel() async -> VNCoreMLModel {
+        if self.cachedSegmentationModel == nil {
+            // FIXME: we are getting "unable to mmap file" error when reusing model
+//            self.cachedSegmentationModel = await Self.loadSegmentationModel()
+            return await Self.loadSegmentationModel()
+        }
+        return self.cachedSegmentationModel!
+    }
+    
+    private static func loadLayoutModel() async -> VNCoreMLModel {
         let modelConfig = MLModelConfiguration()
         modelConfig.computeUnits = .cpuAndGPU // FIXME: For some reason model often crashes on neural units during preview
         
@@ -127,7 +148,7 @@ final class RoomInferenceHelper {
         return model
     }
     
-    private func loadSegmentationModel() async -> VNCoreMLModel {
+    private static func loadSegmentationModel() async -> VNCoreMLModel {
         let modelConfig = MLModelConfiguration()
         modelConfig.computeUnits = .all
         

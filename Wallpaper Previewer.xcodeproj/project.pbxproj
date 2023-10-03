@@ -37,12 +37,15 @@
 		D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */; };
 		D54887A729ABD120003A543B /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54887A629ABD120003A543B /* Math.swift */; };
 		D54D5C6629AE85CD00701A42 /* UIImage+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54D5C6529AE85CD00701A42 /* UIImage+Orientation.swift */; };
+		D5552DE52ACC8A7000851C0A /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5552DE42ACC8A7000851C0A /* NavigationManager.swift */; };
+		D5552DE82ACC8B9E00851C0A /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5552DE72ACC8B9E00851C0A /* Navigator.swift */; };
+		D5552DEA2ACC8C5600851C0A /* View+RouteIterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5552DE92ACC8C5600851C0A /* View+RouteIterator.swift */; };
 		D55807AE2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55807AD2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift */; };
 		D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB02A9A26D2005A6E9A /* Model.swift */; };
 		D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */; };
 		D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */; };
 		D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */; };
-		D584957D2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */; };
+		D584957D2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */; };
 		D5852D0A2987014D00877628 /* libtexture_synthesis_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5852D08298700D600877628 /* libtexture_synthesis_adapter.a */; };
 		D58811A2299E26F2000F815C /* Wallpaper_Previewer_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58811A1299E26F2000F815C /* Wallpaper_Previewer_Tests.swift */; };
 		D58811AF299E27F7000F815C /* Wallpaper_Previewer_UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58811AE299E27F7000F815C /* Wallpaper_Previewer_UITests.swift */; };
@@ -118,13 +121,16 @@
 		D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Helpers.swift"; sourceTree = "<group>"; };
 		D54887A629ABD120003A543B /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		D54D5C6529AE85CD00701A42 /* UIImage+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Orientation.swift"; sourceTree = "<group>"; };
+		D5552DE42ACC8A7000851C0A /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
+		D5552DE72ACC8B9E00851C0A /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
+		D5552DE92ACC8C5600851C0A /* View+RouteIterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RouteIterator.swift"; sourceTree = "<group>"; };
 		D55807AD2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerPlaygroundScreen.swift; sourceTree = "<group>"; };
 		D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSynthesisAdapter.h; sourceTree = "<group>"; };
 		D57AEDB02A9A26D2005A6E9A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = flip_combined_layoutnet_persp_mlprogram.mlpackage; sourceTree = "<group>"; };
 		D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
-		D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperSynthesisHelper.swift; sourceTree = "<group>"; };
+		D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperTileSynthesisService.swift; sourceTree = "<group>"; };
 		D5852D032985B67900877628 /* FfiBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfiBridge.h; sourceTree = "<group>"; };
 		D5852D08298700D600877628 /* libtexture_synthesis_adapter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtexture_synthesis_adapter.a; path = target/release/libtexture_synthesis_adapter.a; sourceTree = "<group>"; };
 		D588119F299E26F2000F815C /* Wallpaper Previewer Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Wallpaper Previewer Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -270,6 +276,7 @@
 				D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */,
 				D5852D032985B67900877628 /* FfiBridge.h */,
 				D513A1F2298D71F500771077 /* Utils */,
+				D5552DE62ACC8B5E00851C0A /* Navigation */,
 				D5088FB02982A78100088359 /* ImagePicker.swift */,
 				D548879929ABB016003A543B /* SegmentationVisualizationView.swift */,
 				D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */,
@@ -293,7 +300,7 @@
 			children = (
 				D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */,
 				D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */,
-				D584957C2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift */,
+				D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */,
 				D513A1F3298D721300771077 /* UIImage+Extensions.swift */,
 				D54887A429ABD0F6003A543B /* MLMultiArray+Helpers.swift */,
 				D54887A629ABD120003A543B /* Math.swift */,
@@ -306,13 +313,23 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		D5552DE62ACC8B5E00851C0A /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				D5552DE42ACC8A7000851C0A /* NavigationManager.swift */,
+				D5897FD92AB865CA0099E31E /* Route.swift */,
+				D5552DE72ACC8B9E00851C0A /* Navigator.swift */,
+				D5552DE92ACC8C5600851C0A /* View+RouteIterator.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		D57AEDB42A9A278A005A6E9A /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				D50380BB2AB20DC6007933A6 /* GalleryType.swift */,
 				D50380C32AB21BD3007933A6 /* TabType.swift */,
 				D5897FA82AB33F650099E31E /* MediaFile.swift */,
-				D5897FD92AB865CA0099E31E /* Route.swift */,
 				D535115B2ABA1131009B9029 /* RoomLayout.swift */,
 				D535115D2ABA1157009B9029 /* RoomType.swift */,
 				D535115F2ABA11BE009B9029 /* Line.swift */,
@@ -585,6 +602,7 @@
 				D5897FE52AB873170099E31E /* RoomInferenceHelper.swift in Sources */,
 				D5088FB12982A78100088359 /* ImagePicker.swift in Sources */,
 				D5897FA72AB325120099E31E /* VerticalLabelStyle.swift in Sources */,
+				D5552DEA2ACC8C5600851C0A /* View+RouteIterator.swift in Sources */,
 				D5897FA92AB33F650099E31E /* MediaFile.swift in Sources */,
 				D50380A82AB20312007933A6 /* GalleryHeaderView.swift in Sources */,
 				D5897FBE2AB4A68D0099E31E /* PreviewGenerationScreen.swift in Sources */,
@@ -598,6 +616,7 @@
 				D54887A729ABD120003A543B /* Math.swift in Sources */,
 				D53511662ABA12E7009B9029 /* RoomLayout+Conversions.swift in Sources */,
 				D5897FB42AB37F930099E31E /* AddImageGridItemView.swift in Sources */,
+				D5552DE52ACC8A7000851C0A /* NavigationManager.swift in Sources */,
 				D55807AE2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift in Sources */,
 				D513A1F4298D721300771077 /* UIImage+Extensions.swift in Sources */,
 				D5897FB82AB47C240099E31E /* InfoPanelView.swift in Sources */,
@@ -612,13 +631,14 @@
 				D535115E2ABA1157009B9029 /* RoomType.swift in Sources */,
 				D5897FB62AB478C60099E31E /* PinchPhotoView.swift in Sources */,
 				D50380BC2AB20DC6007933A6 /* GalleryType.swift in Sources */,
+				D5552DE82ACC8B9E00851C0A /* Navigator.swift in Sources */,
 				D548879A29ABB016003A543B /* SegmentationVisualizationView.swift in Sources */,
 				D5BB738629AE8C9300C1C885 /* Orientation.swift in Sources */,
 				D5088FA32982A77200088359 /* Wallpaper_PreviewerApp.swift in Sources */,
 				D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */,
 				D5897FAF2AB376750099E31E /* GalleryGridView.swift in Sources */,
 				D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */,
-				D584957D2ABF0D5E0048BE1D /* WallpaperSynthesisHelper.swift in Sources */,
+				D584957D2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift in Sources */,
 				D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */,
 				D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */,
 				D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */,
