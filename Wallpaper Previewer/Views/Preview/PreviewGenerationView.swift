@@ -14,6 +14,8 @@ struct PreviewGenerationView: View {
     private var progressLabel: Binding<String> {
         Binding(get: {
             switch viewModel.previewGenerationStatus {
+                case .idle:
+                    return "Waiting"
                 case .segmentation:
                     return "Segmenting room walls"
                 case .layout:
@@ -22,6 +24,8 @@ struct PreviewGenerationView: View {
                     return "Synthesizing wallpaper texture"
                 case .assemble:
                     return "Assembling preview"
+                case .done(_):
+                    return "Opening preview"
                 case _:
                     return ""
             }
@@ -30,46 +34,12 @@ struct PreviewGenerationView: View {
     
     var body: some View {
         ZStack(alignment: .center) {
-            
-            VStack {
-                Image(uiImage: viewModel.segmentationImage)
-                    .resizable()
-                    .frame(width: 256, height: 256)
-                ProgressView(
-                    label: {
-                        Text(progressLabel.wrappedValue)
-                    }
-                )
-                .controlSize(.large)
-            }
-            
-//            switch viewModel.previewGenerationStatus {
-//            case .segmentation:
-//                Text("Segmentation")
-//            case .layout:
-//                Text("Layout")
-//            case .textureSynthesis:
-//                Text("Texture synthesis")
-//            case .assemble:
-//                Text("Assemble")
-//            case .done(let previewMediaFile):
-//                Text("Done")
-//            case .error(let message):
-//                Text("Error: \(message)")
-//            }
-            
-            // TODO: some progress bar
-            
-            // FIXME: for debug
-//            Image(uiImage: viewModel.segmentationImage)
-//                .resizable()
-//                .scaledToFill()
-//                .frame(width: 300, height: 300)
-//                .border(Color.red)
-//                .padding(12)
-                
-                
-            
+            ProgressView(
+                label: {
+                    Text(progressLabel.wrappedValue)
+                }
+            )
+            .controlSize(.large)
         }
         .task {
             await viewModel.generatePreview()

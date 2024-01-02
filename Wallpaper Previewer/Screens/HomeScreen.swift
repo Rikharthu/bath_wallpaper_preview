@@ -9,7 +9,17 @@ import SwiftUI
 
 struct HomeScreen: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(alignment: .leading) {
+            Text("Home")
+                .font(.largeTitle)
+                .padding(.top, 16)
+                .padding(.horizontal, 16)
+            
+            HomeSection(
+                viewModel: HomeSectionViewModel()
+            )
+            Spacer()
+        }
     }
 }
 

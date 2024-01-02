@@ -66,6 +66,7 @@ struct GalleryGridView: View {
             }
             .padding(8)
         }
+        .frame(maxHeight: .infinity)
         // TODO: switch to PhotosPicker for advanced controls, for now use ImagePicker
 //        .photosPicker(
 //            isPresented: $viewModel.showPhotosPicker,

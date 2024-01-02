@@ -11,20 +11,14 @@ import Vision
 
 
 // TODO: make it operate on a higher abstraction level, parsing output as well and returning UIImage/RoomLayout. Then rename this actor to RoomLayoutEstimationService
-actor RoomInferenceHelper {
-    
-    // We lazily and asynchronously initialize and cache models as suggested by:
-    // "Improve Core ML integration with async predictions"
-    //   https://developer.apple.com/videos/play/wwdc2023/10049/
-    private var cachedLayoutModel: VNCoreMLModel?
-    private var cachedSegmentationModel: VNCoreMLModel?
+struct RoomInferenceHelper {
     
     func extractRoomLayout(_ image: UIImage) async -> Result<[VNObservation], Error> {
         // let fixedImage = image.fixOrientation()
         
         let sourceImageOrientation = image.imageOrientation
         
-        let layoutModel = await getLayoutModel()
+        let layoutModel = await Self.loadLayoutModel()
         
         let observationResults = await withCheckedContinuation { (continuation: CheckedContinuation<Result<[VNObservation], Error>, Never>) in
             let segmentationRequest = VNCoreMLRequest(model: layoutModel) { request, error in
@@ -60,7 +54,7 @@ actor RoomInferenceHelper {
         
         let sourceImageOrientation = image.imageOrientation
         
-        let segmentationModel = await getSegmentationModel()
+        let segmentationModel = await Self.loadSegmentationModel()
         
         let observationResult = await withCheckedContinuation { (continuation: CheckedContinuation<Result<VNObservation, Error>, Never>) in
             let segmentationRequest = VNCoreMLRequest(model: segmentationModel) { request, error in
@@ -92,27 +86,9 @@ actor RoomInferenceHelper {
         return observationResult
     }
     
-    private func getLayoutModel() async -> VNCoreMLModel {
-        if self.cachedLayoutModel == nil {
-            // FIXME: we are getting "unable to mmap file" error when reusing model
-//             self.cachedLayoutModel = await Self.loadLayoutModel()
-            return await Self.loadLayoutModel()
-        }
-        return self.cachedLayoutModel!
-    }
-    
-    private func getSegmentationModel() async -> VNCoreMLModel {
-        if self.cachedSegmentationModel == nil {
-            // FIXME: we are getting "unable to mmap file" error when reusing model
-//            self.cachedSegmentationModel = await Self.loadSegmentationModel()
-            return await Self.loadSegmentationModel()
-        }
-        return self.cachedSegmentationModel!
-    }
-    
     private static func loadLayoutModel() async -> VNCoreMLModel {
         let modelConfig = MLModelConfiguration()
-        modelConfig.computeUnits = .cpuAndGPU // FIXME: For some reason model often crashes on neural units during preview
+        modelConfig.computeUnits = .cpuAndGPU
         
         let layoutModel = try! flip_combined_layoutnet_persp_mlprogram(configuration: modelConfig)
         let modelDescription = layoutModel.model.modelDescription

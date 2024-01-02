@@ -1,3 +1,18 @@
+# Wallpaper Preview
+
+## Building the Application
+
+The application uses the [texture-synthesis](https://github.com/EmbarkStudios/texture-synthesis) Rust library and our FFI bridge is generated using the `cbindgen`utility. As such, [Rust](https://www.rust-lang.org/tools/install) and [cbindgen](https://github.com/mozilla/cbindgen) must be installed
+
+XCode by default doesn't user the system's `PATH` variable. The easiest way to make `cargo` accessible to XCode during the build phase is to modify the [bin/compile-library.sh](/bin/compile-library.sh) and change the line 
+
+```shell
+PATH="$PATH:/Users/<user>/.cargo/bin"
+```
+
+ to point to own Cargo installation directory.
+
+
 # Building and Deploying a Rust library on iOS
 
 * https://blog.mozilla.org/data/2022/01/31/this-week-in-glean-building-and-deploying-a-rust-library-on-ios/

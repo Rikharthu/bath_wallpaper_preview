@@ -242,21 +242,20 @@ pub(crate) fn create_preview(
                 warped_wall_tile_pixel.0[1] as f32 / 255.0,
                 warped_wall_tile_pixel.0[2] as f32 / 255.0,
             );
-            
+
             let tile_pixel_hsv = rgb_to_hsv(tile_pixel_rgb);
             let tile_pixel_hsv_value = (tile_pixel_hsv.2 * 255.0) as i32;
-            
+
             let shifted_tile_pixel_hsv_value =
                 (tile_pixel_hsv_value + blackness_delta).clamp(0, 255) as f32 / 255.0;
-            
-            
+
             let shifted_tile_pixel_hsv = (
                 tile_pixel_hsv.0,
                 tile_pixel_hsv.1,
                 shifted_tile_pixel_hsv_value,
             );
             let shifted_tile_pixel_rgb = hsv_to_rgb(shifted_tile_pixel_hsv);
-            
+
             *warped_wall_tile_pixel = Rgba([
                 (shifted_tile_pixel_rgb.0 * 255.0) as u8,
                 (shifted_tile_pixel_rgb.1 * 255.0) as u8,
@@ -388,7 +387,7 @@ mod tests {
             })
             .collect();
 
-        let images_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
+        let images_dir = PathBuf::from("/path/to/res_lsun_tr_gt_npy");
         let image_path = images_dir.join(format!("{sample_idx}.png"));
         println!("Reading image: {image_path:?}");
         let mut room_image = image::open(image_path).unwrap().into_rgb8();
@@ -459,9 +458,8 @@ mod tests {
 
     #[test]
     fn transferring_shadows() {
-        // TODO: https://blog.griddynamics.com/using-augmented-reality-in-interior-property-design-how-did-we-live-without-it/
         let sample_idx = 2;
-        let images_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
+        let images_dir = PathBuf::from("/path/to/res_lsun_tr_gt_npy");
         let image_path = images_dir.join(format!("{sample_idx}.png"));
         let room_image = image::open(image_path).unwrap();
 

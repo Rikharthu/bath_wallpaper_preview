@@ -14,8 +14,10 @@ struct PickWallpaperPhotoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Pick Wallpaper Photo")
-            Text("Some more instructions....")
+            InstructionsView(
+                title: "Pick Wallpaper Photo",
+                subtitle: "Pick or capture photo of the wallpaper you want to apply to the room."
+            )
             GalleryGridView(
                 allowsAdding: true,
                 onItemSelected: { mediaFile in

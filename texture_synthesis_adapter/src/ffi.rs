@@ -1,6 +1,7 @@
 // TODO: move whatever we export to Objective-C here.
 
 use crate::polygons::{compute_wall_polygons, WallPolygon};
+use crate::preview::create_preview;
 use crate::{polygons, GeneratorProgressLogger};
 use image::{DynamicImage, GrayImage, RgbImage, Rgba, RgbaImage};
 use lsun_res_parser::{parse_lsun_results, Point, RoomLayoutInfo};
@@ -11,7 +12,6 @@ use std::{mem, ptr, slice};
 use texture_synthesis as ts;
 use texture_synthesis::session::{GeneratorProgress, ProgressUpdate};
 use texture_synthesis::Dims;
-use crate::preview::create_preview;
 
 #[repr(C)]
 pub struct ImageInfo {
@@ -180,12 +180,7 @@ pub unsafe extern "C" fn generate_preview(
     let room_image = DynamicImage::from(room_image).into_rgb8();
     let wallpaper_tile_image = DynamicImage::from(wallpaper_tile_image).into_rgb8();
 
-    let preview_image = create_preview(
-        room_image,
-        wall_mask_image,
-        wallpaper_tile_image,
-        polygons
-    );
+    let preview_image = create_preview(room_image, wall_mask_image, wallpaper_tile_image, polygons);
     let preview_image = DynamicImage::from(preview_image).into_rgba8();
 
     ImageInfo::from(preview_image)

@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct HomeSectionItem: Identifiable {
+    let id: Int
+    let title: String
+    let subtitle: String
+    let image: String
+}

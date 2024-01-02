@@ -42,11 +42,6 @@ struct SegmentationVisualizationView: View {
                 let rowStartIdx = row * rowStride
 
                 for col in 0 ..< segmentationMapHeight {
-//                    let idx = rowStartIdx + col
-//                    let classId = segmentationMap[idx].intValue
-
-//                    let classId = segmentationMap[[row, col] as [NSNumber]]
-
                     // "Core ML Survival Guide" claims that pointer access is the fastest option (page 401)
                     // TODO: measure whether this really is the fastest option
                     let score = segmentationMapPtr[rowStartIdx + col]
@@ -68,66 +63,6 @@ struct SegmentationVisualizationView: View {
                     }
                 }
             }
-
-//            let segmentationMapWidth = segmentationMap.shape[2].intValue
-//            let segmentationMapHeight = segmentationMap.shape[3].intValue
-//
-//            let widthScale = size.width / CGFloat(segmentationMapWidth)
-//            let heightScale = size.height / CGFloat(segmentationMapHeight)
-//
-//            print("segmentationMap: \(segmentationMap)")
-//            let array = MultiArray<Float>(segmentationMap)
-//            print(array.shape)
-
-//            let arrayReshaped = array.reshaped([21, 448, 448])
-//            print(arrayReshaped.shape)
-
-            // TODO: to determine class value, use argmax over class dimensions
-
-            // Shape: 1, 21, 448, 448
-            // cat: 8
-
-            // TODO: when processing take into account rotation. Photos mask appear to be rotated 90 counter-clockwise
-
-            // TODO: can we get it from model metadata?
-            // TODO: can argmax be accelerated with some existing function or processed on multiple threads?
-            // TODO: https://github.com/hollance/coreml-survival-guide/blob/4dfcbb97c065726a3da240c55d90b2075959801d/Scripts/deeplab.py#L94-L109
-
-//            let numClasses = 21
-//            for rowIndex in 0 ..< segmentationMapHeight {
-//                for columnIndex in 0 ..< segmentationMapWidth {
-//                    // Determine which class this pixel belongs to
-//                    var maxClassId = 0
-//                    var maxClassValue = array[0, 0, rowIndex, columnIndex]
-//                    for classId in 1 ..< numClasses {
-//                        let classValue = array[0, classId, rowIndex, columnIndex]
-//                        if classValue > maxClassValue {
-//                            maxClassId = classId
-//                            maxClassValue = classValue
-//                        }
-//                    }
-//
-//                    if maxClassId == 0 {
-//                        // It is background, ignore
-//                        continue
-//                    }
-//
-//                    // TODO: do we need to apply sigmoid on value?
-            ////                    let alpha = segmentationMap[1 * 21 * 448 * classId].doubleValue
-//
-//                    context.withCGContext { cgContext in
-//                        cgContext.setFillColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
-//                        cgContext.fill([
-//                            CGRect(
-//                                x: heightScale * CGFloat(columnIndex),
-//                                y: widthScale * CGFloat(rowIndex),
-//                                width: heightScale,
-//                                height: widthScale
-//                            )
-//                        ])
-//                    }
-//                }
-//            }
         }
         .background(.white)
         .border(.red, width: 2)

@@ -41,6 +41,13 @@
 		D5552DE82ACC8B9E00851C0A /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5552DE72ACC8B9E00851C0A /* Navigator.swift */; };
 		D5552DEA2ACC8C5600851C0A /* View+RouteIterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5552DE92ACC8C5600851C0A /* View+RouteIterator.swift */; };
 		D55807AE2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55807AD2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift */; };
+		D5593CE02ACDD10200CBA825 /* InstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CDF2ACDD10200CBA825 /* InstructionsView.swift */; };
+		D5593CE22ACDD6BB00CBA825 /* HomeSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE12ACDD6BB00CBA825 /* HomeSection.swift */; };
+		D5593CE42ACDD80D00CBA825 /* HomeSectionItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE32ACDD80D00CBA825 /* HomeSectionItemView.swift */; };
+		D5593CE62ACDE1B300CBA825 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE52ACDE1B300CBA825 /* HomeScreen.swift */; };
+		D5593CE82ACDE22B00CBA825 /* HomeSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE72ACDE22B00CBA825 /* HomeSectionViewModel.swift */; };
+		D5593CEA2ACDE27C00CBA825 /* HomeSectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE92ACDE27C00CBA825 /* HomeSectionItem.swift */; };
+		D5593CEE2ACDE7FF00CBA825 /* TutorialSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */; };
 		D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB02A9A26D2005A6E9A /* Model.swift */; };
 		D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */; };
 		D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */; };
@@ -69,6 +76,9 @@
 		D5897FE52AB873170099E31E /* RoomInferenceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */; };
 		D5A41CB829E1D84400693D9C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = D5A41CB729E1D84400693D9C /* ComposableArchitecture */; };
 		D5BB738629AE8C9300C1C885 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB738529AE8C9300C1C885 /* Orientation.swift */; };
+		D5FC73572ACF1E80003B71CC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FC73562ACF1E80003B71CC /* SettingsView.swift */; };
+		D5FC73592ACF26AE003B71CC /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FC73582ACF26AE003B71CC /* Settings.swift */; };
+		D5FC735B2ACF2885003B71CC /* SliderSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FC735A2ACF2885003B71CC /* SliderSettingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +135,13 @@
 		D5552DE72ACC8B9E00851C0A /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
 		D5552DE92ACC8C5600851C0A /* View+RouteIterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RouteIterator.swift"; sourceTree = "<group>"; };
 		D55807AD2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerPlaygroundScreen.swift; sourceTree = "<group>"; };
+		D5593CDF2ACDD10200CBA825 /* InstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionsView.swift; sourceTree = "<group>"; };
+		D5593CE12ACDD6BB00CBA825 /* HomeSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSection.swift; sourceTree = "<group>"; };
+		D5593CE32ACDD80D00CBA825 /* HomeSectionItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionItemView.swift; sourceTree = "<group>"; };
+		D5593CE52ACDE1B300CBA825 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
+		D5593CE72ACDE22B00CBA825 /* HomeSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionViewModel.swift; sourceTree = "<group>"; };
+		D5593CE92ACDE27C00CBA825 /* HomeSectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionItem.swift; sourceTree = "<group>"; };
+		D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialSheetView.swift; sourceTree = "<group>"; };
 		D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSynthesisAdapter.h; sourceTree = "<group>"; };
 		D57AEDB02A9A26D2005A6E9A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = flip_combined_layoutnet_persp_mlprogram.mlpackage; sourceTree = "<group>"; };
@@ -156,6 +173,9 @@
 		D5897FE22AB86E560099E31E /* PreviewGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewGenerationView.swift; sourceTree = "<group>"; };
 		D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInferenceHelper.swift; sourceTree = "<group>"; };
 		D5BB738529AE8C9300C1C885 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
+		D5FC73562ACF1E80003B71CC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D5FC73582ACF26AE003B71CC /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		D5FC735A2ACF2885003B71CC /* SliderSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderSettingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +227,12 @@
 				D5897FBB2AB47CDE0099E31E /* PinchPhotoSheetView.swift */,
 				D5897FB72AB47C240099E31E /* InfoPanelView.swift */,
 				D5897FB92AB47C360099E31E /* ControlImageView.swift */,
+				D5593CDF2ACDD10200CBA825 /* InstructionsView.swift */,
+				D5593CE12ACDD6BB00CBA825 /* HomeSection.swift */,
+				D5593CE32ACDD80D00CBA825 /* HomeSectionItemView.swift */,
+				D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */,
+				D5FC73562ACF1E80003B71CC /* SettingsView.swift */,
+				D5FC735A2ACF2885003B71CC /* SliderSettingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -217,6 +243,7 @@
 				D55807AD2AA6556900278FC0 /* FileManagerPlaygroundScreen.swift */,
 				D50380A52AB2001D007933A6 /* GalleryScreen.swift */,
 				D5897FBD2AB4A68D0099E31E /* PreviewGenerationScreen.swift */,
+				D5593CE52ACDE1B300CBA825 /* HomeScreen.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -335,6 +362,7 @@
 				D535115F2ABA11BE009B9029 /* Line.swift */,
 				D53511612ABA11F4009B9029 /* Point.swift */,
 				D53511632ABA125C009B9029 /* Polygon.swift */,
+				D5593CE92ACDE27C00CBA825 /* HomeSectionItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -387,6 +415,8 @@
 			children = (
 				D5897FB12AB376AC0099E31E /* GalleryGridView+ViewModel.swift */,
 				D5897FDE2AB86BB30099E31E /* PreviewGenerationScreen+ViewModel.swift */,
+				D5593CE72ACDE22B00CBA825 /* HomeSectionViewModel.swift */,
+				D5FC73582ACF26AE003B71CC /* Settings.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -604,6 +634,7 @@
 				D5897FA72AB325120099E31E /* VerticalLabelStyle.swift in Sources */,
 				D5552DEA2ACC8C5600851C0A /* View+RouteIterator.swift in Sources */,
 				D5897FA92AB33F650099E31E /* MediaFile.swift in Sources */,
+				D5FC735B2ACF2885003B71CC /* SliderSettingView.swift in Sources */,
 				D50380A82AB20312007933A6 /* GalleryHeaderView.swift in Sources */,
 				D5897FBE2AB4A68D0099E31E /* PreviewGenerationScreen.swift in Sources */,
 				D50453B72A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage in Sources */,
@@ -624,17 +655,24 @@
 				D53D25B32ABDF8ED005846E0 /* SeedData.swift in Sources */,
 				D5897FDF2AB86BB30099E31E /* PreviewGenerationScreen+ViewModel.swift in Sources */,
 				D50380C02AB21238007933A6 /* TabBarItemView.swift in Sources */,
+				D5593CE02ACDD10200CBA825 /* InstructionsView.swift in Sources */,
+				D5593CE62ACDE1B300CBA825 /* HomeScreen.swift in Sources */,
 				D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */,
+				D5593CEA2ACDE27C00CBA825 /* HomeSectionItem.swift in Sources */,
 				D5897FBA2AB47C360099E31E /* ControlImageView.swift in Sources */,
 				D5897FDD2AB869130099E31E /* PickRoomPhotoView.swift in Sources */,
 				D5897FE32AB86E560099E31E /* PreviewGenerationView.swift in Sources */,
 				D535115E2ABA1157009B9029 /* RoomType.swift in Sources */,
+				D5593CE42ACDD80D00CBA825 /* HomeSectionItemView.swift in Sources */,
+				D5593CEE2ACDE7FF00CBA825 /* TutorialSheetView.swift in Sources */,
 				D5897FB62AB478C60099E31E /* PinchPhotoView.swift in Sources */,
+				D5593CE22ACDD6BB00CBA825 /* HomeSection.swift in Sources */,
 				D50380BC2AB20DC6007933A6 /* GalleryType.swift in Sources */,
 				D5552DE82ACC8B9E00851C0A /* Navigator.swift in Sources */,
 				D548879A29ABB016003A543B /* SegmentationVisualizationView.swift in Sources */,
 				D5BB738629AE8C9300C1C885 /* Orientation.swift in Sources */,
 				D5088FA32982A77200088359 /* Wallpaper_PreviewerApp.swift in Sources */,
+				D5FC73572ACF1E80003B71CC /* SettingsView.swift in Sources */,
 				D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */,
 				D5897FAF2AB376750099E31E /* GalleryGridView.swift in Sources */,
 				D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */,
@@ -642,9 +680,11 @@
 				D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */,
 				D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */,
 				D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */,
+				D5593CE82ACDE22B00CBA825 /* HomeSectionViewModel.swift in Sources */,
 				D50380BE2AB211D2007933A6 /* BottomTabBarView.swift in Sources */,
 				D5897FAD2AB3742C0099E31E /* ImageGridItemView.swift in Sources */,
 				D54D5C6629AE85CD00701A42 /* UIImage+Orientation.swift in Sources */,
+				D5FC73592ACF26AE003B71CC /* Settings.swift in Sources */,
 				D535115C2ABA1131009B9029 /* RoomLayout.swift in Sources */,
 				D53511622ABA11F4009B9029 /* Point.swift in Sources */,
 				D5897FBC2AB47CDE0099E31E /* PinchPhotoSheetView.swift in Sources */,

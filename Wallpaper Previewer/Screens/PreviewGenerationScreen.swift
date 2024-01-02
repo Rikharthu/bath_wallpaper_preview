@@ -22,26 +22,35 @@ struct PreviewGenerationScreen: View {
     //  5. Load or generate tile, display some tiled examples as image
     //  6. Assemble everything into preview
     
+    private var pickRoomPhotoView: some View {
+        PickRoomPhotoView(
+            pickedRoomPhoto: $viewModel.roomPhoto
+        )
+    }
+    private var pickWallpaperPhotoView: some View {
+        PickWallpaperPhotoView(
+            pickedWallpaperPhoto: $viewModel.wallpaperPhoto
+        )
+    }
+    private var previewGenerationView: some View {
+        PreviewGenerationView(
+            viewModel: viewModel
+        )
+    }
     
     
     var body: some View {
-        // TODO: use TabView for multi-step flow
-        TabView(selection: $viewModel.currentTab) {
-            // TODO: each page might have its own ViewModel that exposes completion status (can switch to next tab)
-            PickRoomPhotoView(
-                pickedRoomPhoto: $viewModel.roomPhoto
-            ).tag(PreviewStep.pickRoomPhoto)
-            
-            PickWallpaperPhotoView(
-                pickedWallpaperPhoto: $viewModel.wallpaperPhoto
-            ).tag(PreviewStep.pickWallpaperPhoto)
-            
-            PreviewGenerationView(
-                viewModel: viewModel
-            ).tag(PreviewStep.preparePreview)
-            
-            // TODO: when done generating preview, show pinch view with this image and navigation must exit. make it an additional PreviewStep variant
+        ZStack {
+            switch viewModel.currentTab {
+            case .pickRoomPhoto:
+                pickRoomPhotoView
+            case .pickWallpaperPhoto:
+                pickWallpaperPhotoView
+            case .preparePreview:
+                previewGenerationView
+            }
         }
+        .frame(maxHeight: .infinity)
         .sheet(
             item: $viewModel.generatedPreviewFile,
             onDismiss: {

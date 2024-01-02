@@ -189,8 +189,8 @@ fn main() {
     let example_assembled_image_file = output_dir.join("example_assempled.jpg");
     let report_file = output_dir.join("report.json");
 
-    let tile_times_width = 5;
-    let tile_times_height = 3;
+    let tile_times_width = 2;
+    let tile_times_height = 2;
 
     let tiled_image_width = tile_times_width * result_image.width();
     let tiled_image_height = tile_times_height * result_image.width();

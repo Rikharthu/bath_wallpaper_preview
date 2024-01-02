@@ -14,8 +14,10 @@ struct PickRoomPhotoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Pick Room Photo")
-            Text("Some instructions....")
+            InstructionsView(
+                title: "Pick Room Photo",
+                subtitle: "Pick or capture photo of the room you want to preview new wallpapers on."
+            )
             GalleryGridView(
                 allowsAdding: true,
                 onItemSelected: { mediaFile in
@@ -26,15 +28,14 @@ struct PickRoomPhotoView: View {
                     galleryType: .rooms
                 )
             )
-            Spacer()
         }
-        .frame(
-            minWidth: 0,
-            maxWidth: .infinity,
-            minHeight: 0,
-            maxHeight: .infinity,
-            alignment: .topLeading
-        )
+//        .frame(
+//            minWidth: 0,
+//            maxWidth: .infinity,
+//            minHeight: 0,
+//            maxHeight: .infinity,
+//            alignment: .topLeading
+//        )
     }
 }
 

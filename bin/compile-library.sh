@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+# Original script taken and modified from: 
+#   https://blog.mozilla.org/data/2022/01/31/this-week-in-glean-building-and-deploying-a-rust-library-on-ios/
+
 # Provide path to Rust utilities
-PATH="$PATH:/Users/<user>/.cargo/bin"
+PATH="$PATH:/Users/richardkuodis/.cargo/bin"
 
 if [ "$#" -ne 2 ]; then
   echo "Usage (note: only call inside xcode!):"
@@ -19,7 +22,7 @@ if [[ "$BUILDVARIANT" != "debug" ]]; then
   RELFLAG=--release
 fi
 
-# TODO: Enforce --release mode to make synthesis faster in debug mode
+# Enforce --release mode to make synthesis faster in debug mode
 RELFLAG=--release
 
 set -euvx

@@ -1520,7 +1520,7 @@ pub(crate) mod tests {
         let image_height = 512;
         let image_width = 512;
 
-        let results_dir = PathBuf::from("/Users/richardkuodis/development/Bath/res_lsun_tr_gt_npy");
+        let results_dir = PathBuf::from("/path/to//res_lsun_tr_gt_npy");
 
         let indices_file_path = results_dir.join("indices.npy");
         let indices: Array1<i32> = ndarray_npy::read_npy(indices_file_path).unwrap();
@@ -1605,7 +1605,7 @@ pub(crate) mod tests {
             serde_json::to_writer(writer, &room_layout).unwrap();
 
             // let images_dir = PathBuf::from(
-            //     "/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img",
+            //     "/path/to/lsun_tr_gt/img",
             // );
             // let image_path = images_dir.join(format!("{i}.png"));
             // let src_image = image::open(image_path).unwrap().into_rgb8();
@@ -1641,7 +1641,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1672,7 +1672,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1703,7 +1703,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1731,7 +1731,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1759,7 +1759,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1789,7 +1789,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1812,7 +1812,7 @@ pub(crate) mod tests {
         let lines = wall_polygon.lines().to_vec();
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1837,7 +1837,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygon.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1859,7 +1859,7 @@ pub(crate) mod tests {
             .to_vec();
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1881,7 +1881,7 @@ pub(crate) mod tests {
             .to_vec();
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 
@@ -1904,7 +1904,7 @@ pub(crate) mod tests {
         lines.extend(right_wall_polygons.lines());
 
         let images_dir =
-            PathBuf::from("/Users/richardkuodis/development/pytorch-layoutnet/res/lsun_tr_gt/img");
+            PathBuf::from("/path/to/lsun_tr_gt/img");
         let image_path = images_dir.join(format!("{i}.png"));
         let src_image = image::open(image_path).unwrap().into_rgb8();
 

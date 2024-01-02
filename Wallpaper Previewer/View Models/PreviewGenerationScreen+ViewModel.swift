@@ -111,7 +111,6 @@ extension PreviewGenerationScreen {
             print("Generating preview...")
             
             // MARK: - Wall segmentation
-
             previewGenerationStatus = .segmentation
             // TODO: check if we have cached room segmentation for this image, if not: create one
             
@@ -211,6 +210,7 @@ extension PreviewGenerationScreen {
             // TODO: move this to some helper class/utils so that we don't work with pointers and memory management in ViewModel
             
             // FIXME: for debug
+            let start = DispatchTime.now().uptimeNanoseconds
             let previewImageInfo = roomPhoto.withUnsafeRgbaImageInfoPointer { roomImageInfoPtr in
                 roomWallMask.withUnsafeGrayImageInfoPointer { roomWallMaskImageInfoPtr in
                     wallpaperTile.withUnsafeRgbaImageInfoPointer { wallpaperTileImageInfoPtr in
@@ -223,6 +223,10 @@ extension PreviewGenerationScreen {
                     }
                 }
             }
+            let end = DispatchTime.now().uptimeNanoseconds
+            let elapsed = end - start
+            let elapsedMillis = Double(elapsed) / 1_000_000.0;
+            print("Preview generation step took \(elapsedMillis) milliseconds")
             
             let previewImage = UIImage(fromRgbaImageInfo: previewImageInfo)
             
@@ -264,6 +268,7 @@ extension PreviewGenerationScreen {
                 return .failure(PreviewError(message: "Could not load wallpaper photo: \(error)"))
             }
             
+            // FIXME: for debug
             let synthesisResult = await wallpaperSynthesisHelper.synthesizeWallpaperTile(fromPhoto: wallpaperPhoto)
             let wallpaperTile: UIImage
             switch synthesisResult {
@@ -411,6 +416,8 @@ extension PreviewGenerationScreen {
             case .failure(let error):
                 return .failure(PreviewError(message: "Could not load room photo: \(error)"))
             }
+            
+            print("Input room photo image size: \(roomPhotoImage.size)")
             
             let segmentationData: VNObservation
             let segmentationResult = await inferenceHelper.segmentImage(roomPhotoImage)

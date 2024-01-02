@@ -10,7 +10,7 @@ struct ContentView: View {
         Navigator { navigationManager in
             VStack(spacing: 0) {
                 TabView(selection: $selectedTab) {
-                    Text("Home")
+                    HomeScreen()
                         .tag(TabType.home)
                     GalleryScreen()
                         .tag(TabType.gallery)

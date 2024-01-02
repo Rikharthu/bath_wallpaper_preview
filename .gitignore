@@ -92,3 +92,5 @@ iOSInjectionProject/
 
 /target
 /synthesis_output/*
+/output/*
+/.idea
