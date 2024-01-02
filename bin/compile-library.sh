@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Provide path to Rust utilities
-PATH="$PATH:/Users/richardkuodis/.cargo/bin"
+PATH="$PATH:/Users/<user>/.cargo/bin"
 
 if [ "$#" -ne 2 ]; then
   echo "Usage (note: only call inside xcode!):"
