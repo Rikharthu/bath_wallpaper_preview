@@ -1,6 +1,6 @@
 # Wallpaper Preview
 
-## Building the Application
+## Building and Running the Application
 
 The application uses the [texture-synthesis](https://github.com/EmbarkStudios/texture-synthesis) Rust library and our FFI bridge is generated using the `cbindgen`utility. As such, [Rust](https://www.rust-lang.org/tools/install) and [cbindgen](https://github.com/mozilla/cbindgen) must be installed
 
@@ -12,6 +12,10 @@ PATH="$PATH:/Users/<user>/.cargo/bin"
 
  to point to own Cargo installation directory.
 
+## Related Repositories
+- Wall semantic segmentation model training and evaluation - [Rikharthu/bath_wall_segmentation_model](https://github.com/Rikharthu/bath_wall_segmentation_model)
+- Room layout estimation model fork - [Rikharthu/pytorch-layoutnet](https://github.com/Rikharthu/pytorch-layoutnet)
+- Neural network model files - [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
 
 # Building and Deploying a Rust library on iOS
 

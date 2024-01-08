@@ -18,7 +18,6 @@
 		D50380C02AB21238007933A6 /* TabBarItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50380BF2AB21238007933A6 /* TabBarItemView.swift */; };
 		D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50380C12AB216D6007933A6 /* PreviewButton.swift */; };
 		D50380C42AB21BD3007933A6 /* TabType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50380C32AB21BD3007933A6 /* TabType.swift */; };
-		D50453B72A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = D50453B62A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage */; };
 		D5088FA32982A77200088359 /* Wallpaper_PreviewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5088FA22982A77200088359 /* Wallpaper_PreviewerApp.swift */; };
 		D5088FA52982A77200088359 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5088FA42982A77200088359 /* ContentView.swift */; };
 		D5088FA72982A77300088359 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5088FA62982A77300088359 /* Assets.xcassets */; };
@@ -49,7 +48,6 @@
 		D5593CEA2ACDE27C00CBA825 /* HomeSectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE92ACDE27C00CBA825 /* HomeSectionItem.swift */; };
 		D5593CEE2ACDE7FF00CBA825 /* TutorialSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */; };
 		D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB02A9A26D2005A6E9A /* Model.swift */; };
-		D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */; };
 		D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */; };
 		D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */; };
 		D584957D2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */; };
@@ -111,7 +109,6 @@
 		D50380BF2AB21238007933A6 /* TabBarItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarItemView.swift; sourceTree = "<group>"; };
 		D50380C12AB216D6007933A6 /* PreviewButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewButton.swift; sourceTree = "<group>"; };
 		D50380C32AB21BD3007933A6 /* TabType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabType.swift; sourceTree = "<group>"; };
-		D50453B62A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = "DeepLabV3Plus-mobileone_s3.mlpackage"; sourceTree = "<group>"; };
 		D5088F9F2982A77200088359 /* Wallpaper Previewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wallpaper Previewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5088FA22982A77200088359 /* Wallpaper_PreviewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper_PreviewerApp.swift; sourceTree = "<group>"; };
 		D5088FA42982A77200088359 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -144,7 +141,6 @@
 		D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialSheetView.swift; sourceTree = "<group>"; };
 		D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSynthesisAdapter.h; sourceTree = "<group>"; };
 		D57AEDB02A9A26D2005A6E9A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = flip_combined_layoutnet_persp_mlprogram.mlpackage; sourceTree = "<group>"; };
 		D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperTileSynthesisService.swift; sourceTree = "<group>"; };
@@ -371,8 +367,6 @@
 			isa = PBXGroup;
 			children = (
 				D57AEDB02A9A26D2005A6E9A /* Model.swift */,
-				D57AEDB22A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage */,
-				D50453B62A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage */,
 			);
 			path = "Neural Networks";
 			sourceTree = "<group>";
@@ -637,7 +631,6 @@
 				D5FC735B2ACF2885003B71CC /* SliderSettingView.swift in Sources */,
 				D50380A82AB20312007933A6 /* GalleryHeaderView.swift in Sources */,
 				D5897FBE2AB4A68D0099E31E /* PreviewGenerationScreen.swift in Sources */,
-				D50453B72A2CEF1100F1360B /* DeepLabV3Plus-mobileone_s3.mlpackage in Sources */,
 				D5088FA52982A77200088359 /* ContentView.swift in Sources */,
 				D5897FE12AB86DDE0099E31E /* PickWallpaperPhotoView.swift in Sources */,
 				D53511602ABA11BE009B9029 /* Line.swift in Sources */,
@@ -678,7 +671,6 @@
 				D50380C22AB216D6007933A6 /* PreviewButton.swift in Sources */,
 				D584957D2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift in Sources */,
 				D54887A529ABD0F6003A543B /* MLMultiArray+Helpers.swift in Sources */,
-				D57AEDB32A9A2784005A6E9A /* flip_combined_layoutnet_persp_mlprogram.mlpackage in Sources */,
 				D535115A2ABA0DA3009B9029 /* MLMultiArray+Utils.swift in Sources */,
 				D5593CE82ACDE22B00CBA825 /* HomeSectionViewModel.swift in Sources */,
 				D50380BE2AB211D2007933A6 /* BottomTabBarView.swift in Sources */,
