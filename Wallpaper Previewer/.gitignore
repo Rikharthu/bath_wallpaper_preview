@@ -1,2 +1,4 @@
 /Models/DeepLabV3Plus-mobileone_s3.mlpackage
 /Models/flip_combined_layoutnet_persp_mlprogram.mlpackage
+/Neural Networks/*.mlpackage
+/Neural Networks/*.mlmodel
