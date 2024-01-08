@@ -186,9 +186,6 @@ pub unsafe extern "C" fn generate_preview(
     ImageInfo::from(preview_image)
 }
 
-// TODO: add a method to generate tileable results
-//   See "API - 07_tiling_texture" of https://crates.io/crates/texture-synthesis
-// TODO: return RgbaImageInfo as well or specify it as dst
 #[no_mangle]
 pub extern "C" fn synthesize_texture(
     sample_info: *const ImageInfo,

@@ -48,7 +48,6 @@
 		D5593CEA2ACDE27C00CBA825 /* HomeSectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CE92ACDE27C00CBA825 /* HomeSectionItem.swift */; };
 		D5593CEE2ACDE7FF00CBA825 /* TutorialSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */; };
 		D57AEDB12A9A26D2005A6E9A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB02A9A26D2005A6E9A /* Model.swift */; };
-		D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */; };
 		D57C03DD2AA79F6C00FBD9A5 /* FileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */; };
 		D584957D2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */; };
 		D5852D0A2987014D00877628 /* libtexture_synthesis_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5852D08298700D600877628 /* libtexture_synthesis_adapter.a */; };
@@ -72,7 +71,6 @@
 		D5897FE12AB86DDE0099E31E /* PickWallpaperPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5897FE02AB86DDE0099E31E /* PickWallpaperPhotoView.swift */; };
 		D5897FE32AB86E560099E31E /* PreviewGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5897FE22AB86E560099E31E /* PreviewGenerationView.swift */; };
 		D5897FE52AB873170099E31E /* RoomInferenceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5897FE42AB873170099E31E /* RoomInferenceHelper.swift */; };
-		D5A41CB829E1D84400693D9C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = D5A41CB729E1D84400693D9C /* ComposableArchitecture */; };
 		D5BB738629AE8C9300C1C885 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BB738529AE8C9300C1C885 /* Orientation.swift */; };
 		D5FC73572ACF1E80003B71CC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FC73562ACF1E80003B71CC /* SettingsView.swift */; };
 		D5FC73592ACF26AE003B71CC /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5FC73582ACF26AE003B71CC /* Settings.swift */; };
@@ -141,7 +139,6 @@
 		D5593CED2ACDE7FF00CBA825 /* TutorialSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialSheetView.swift; sourceTree = "<group>"; };
 		D57ACD282A23C92C009B0AF1 /* TextureSynthesisAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSynthesisAdapter.h; sourceTree = "<group>"; };
 		D57AEDB02A9A26D2005A6E9A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		D57C03DC2AA79F6C00FBD9A5 /* FileHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileHelper.swift; sourceTree = "<group>"; };
 		D584957C2ABF0D5E0048BE1D /* WallpaperTileSynthesisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperTileSynthesisService.swift; sourceTree = "<group>"; };
 		D5852D032985B67900877628 /* FfiBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfiBridge.h; sourceTree = "<group>"; };
@@ -186,7 +183,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5A41CB829E1D84400693D9C /* ComposableArchitecture in Frameworks */,
 				D5852D0A2987014D00877628 /* libtexture_synthesis_adapter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,7 +298,6 @@
 				D5552DE62ACC8B5E00851C0A /* Navigation */,
 				D5088FB02982A78100088359 /* ImagePicker.swift */,
 				D548879929ABB016003A543B /* SegmentationVisualizationView.swift */,
-				D57AEDB52A9A2CC0005A6E9A /* ContentViewModel.swift */,
 				D5088FA42982A77200088359 /* ContentView.swift */,
 				D5088FA62982A77300088359 /* Assets.xcassets */,
 				D5088FA82982A77300088359 /* Preview Content */,
@@ -460,7 +455,6 @@
 			);
 			name = "Wallpaper Previewer";
 			packageProductDependencies = (
-				D5A41CB729E1D84400693D9C /* ComposableArchitecture */,
 			);
 			productName = "Wallpaper Previewer";
 			productReference = D5088F9F2982A77200088359 /* Wallpaper Previewer.app */;
@@ -681,7 +675,6 @@
 				D53511622ABA11F4009B9029 /* Point.swift in Sources */,
 				D5897FBC2AB47CDE0099E31E /* PinchPhotoSheetView.swift in Sources */,
 				D5897FDA2AB865CA0099E31E /* Route.swift in Sources */,
-				D57AEDB62A9A2CC0005A6E9A /* ContentViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1105,14 +1098,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		D5A41CB729E1D84400693D9C /* ComposableArchitecture */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D5A41CB629E1D84400693D9C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D5088F972982A77200088359 /* Project object */;
 }

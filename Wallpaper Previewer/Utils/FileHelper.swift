@@ -25,10 +25,10 @@ class FileHelper {
     // TODO: add directories to save mask image and layout JSON as well
     private let fileManager = FileManager.default
     
-    // TODO: use DI
+    // TODO: use DI?
     static let shared: FileHelper = try! create().get()
     
-    // TODO: init() make init throw and initiaze directories here
+    // TODO: init() make init throw and initialize directories here
     private init() {
         let documentsDirectory = try! FileManager.default.url(
             for: .documentDirectory,

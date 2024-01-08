@@ -96,7 +96,6 @@ struct PreviewGenerationScreen: View {
     }
 }
 
-// TODO: move to Models
 enum PreviewStep {
     case pickRoomPhoto
     case pickWallpaperPhoto

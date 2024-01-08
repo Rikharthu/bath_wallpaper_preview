@@ -34,8 +34,7 @@ struct HomeSection: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .sheet(isPresented: $viewModel.showingTutorialSheet) {
-            Text("TODO: tutorial")
-            // TODO: in the future replace with section item that will start the preview generation process and show help bubbles
+            TutorialSheetView()
         }
         
     }

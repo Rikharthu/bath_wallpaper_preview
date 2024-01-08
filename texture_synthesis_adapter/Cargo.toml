@@ -26,8 +26,6 @@ clap = { version = "4.1.8", features = ["derive"] }
 imageproc = "0.23.0"
 serde = { version = "1.0.156", features = ["derive"] }
 serde_json = "1.0.94"
-# TODO: remove this when not needed anymore
-ndarray-npy = "0.8.1"
 
 [lib]
 crate-type = ["staticlib"]
