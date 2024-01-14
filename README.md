@@ -17,6 +17,7 @@ to point to own Cargo installation directory.
 
 Next, model weights must be downloaded
 from [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
+or [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=drive_link)
 and placed into the [Wallpaper Previewer/Neural Networks](Wallpaper Previewer/Neural Networks) directory in Xcode.
 
 From now on the project can be configured as usual Xcode iPhone application project and run on devices.
@@ -26,6 +27,8 @@ From now on the project can be configured as usual Xcode iPhone application proj
 - Wall semantic segmentation model training and
   evaluation - [Rikharthu/bath_wall_segmentation_model](https://github.com/Rikharthu/bath_wall_segmentation_model)
 - Room layout estimation model fork - [Rikharthu/pytorch-layoutnet](https://github.com/Rikharthu/pytorch-layoutnet)
+- LSUN room layout network result parsing Rust
+  code [Rikharthu/bath_rust_lsun_res_parser](https://github.com/Rikharthu/bath_rust_lsun_res_parser)
 - Neural network model
   files - [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
 
