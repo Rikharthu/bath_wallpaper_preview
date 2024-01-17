@@ -17,8 +17,8 @@ to point to own Cargo installation directory.
 
 Next, model weights must be downloaded
 from [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
-or [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=drive_link)
-and placed into the [Wallpaper Previewer/Neural Networks](Wallpaper%20Previewer/Neural Networks) directory in Xcode.
+or [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=sharing)
+and placed into the [Wallpaper Previewer/Neural Networks](Wallpaper%20Previewer/Neural%20Networks) directory in Xcode.
 
 From now on the project can be configured as usual Xcode iPhone application project and run on devices.
 
@@ -31,6 +31,7 @@ From now on the project can be configured as usual Xcode iPhone application proj
   code [Rikharthu/bath_rust_lsun_res_parser](https://github.com/Rikharthu/bath_rust_lsun_res_parser)
 - Neural network model
   files - [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
+  - Alternative: [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=sharing)
 
 ## Attributions
 
