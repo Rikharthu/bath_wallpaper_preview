@@ -33,9 +33,10 @@ struct HomeSection: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .sheet(isPresented: $viewModel.showingTutorialSheet) {
-            TutorialSheetView()
-        }
+        // TODO: re-enable sheet when PDF tutorial has been converted
+//        .sheet(isPresented: $viewModel.showingTutorialSheet) {
+//            TutorialSheetView()
+//        }
         
     }
     
