@@ -22,6 +22,11 @@ and placed into the [Wallpaper Previewer/Neural Networks](Wallpaper%20Previewer/
 
 From now on the project can be configured as usual Xcode iPhone application project and run on devices.
 
+## Using the Application
+
+To start the preview generation process, press the blue floating action button at the bottom navigation bar. Further
+instructions will be displayed by the application.
+
 ## Related Repositories
 
 - Wall semantic segmentation model training and
