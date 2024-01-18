@@ -31,9 +31,16 @@ From now on the project can be configured as usual Xcode iPhone application proj
   code [Rikharthu/bath_rust_lsun_res_parser](https://github.com/Rikharthu/bath_rust_lsun_res_parser)
 - Neural network model
   files - [OneDrive/Shared Models](https://computingservices-my.sharepoint.com/:f:/g/personal/rak56_bath_ac_uk/EpuBnN5Utd5PjCufX5bNYFkB7gFVWwDfyUkqJgv313QMww?e=dQr7FK)
-  - Alternative: [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=sharing)
+    -
+  Alternative: [Google Drive/Shared Models](https://drive.google.com/drive/folders/1uxwYHxXAon9ae0vLJkPip-aGRLmRimNj?usp=sharing)
 
 ## Attributions
+
+### Libraries
+
+Third party Rust software packages used in the project are listed in the [Cargo.toml](Cargo.toml) file.
+Additionally, this project **includes a copy of
+the [texture-synthesis](https://github.com/EmbarkStudios/texture-synthesis) library**.
 
 ### Images
 
@@ -69,5 +76,5 @@ Image assets bundled in the application seed data were taken from the following 
 
 ### Libraries
 
-This project includes a copy of the [texture-synthesis](https://github.com/EmbarkStudios/texture-synthesis) library.
+
 
